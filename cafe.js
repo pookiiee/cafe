@@ -1,6 +1,6 @@
 /* =========================================================================
    كافيه بوكي البنات | Pookie Cozy Cafe Rush
-   Complete Core Logic + Massive Menu + Shop + Levels + 60s Patience + Beep (Arabic)
+   Complete Logic: Base Selection (Cup/Bread) -> Workbench -> Ready Counter -> Serving
    ========================================================================= */
 
 const STATE = {
@@ -15,7 +15,9 @@ const STATE = {
   servedCount: 0,
   missedCount: 0,
   activeStation: "drinks",
-  currentRecipe: { ingredients: [] },
+  selectedBase: null, // قاعدة الطلب (كوب أو خبز/قالب)
+  currentIngredients: [], // المكونات المضافة
+  readyDishes: [], // الأطباق الجاهزة على طاولة التحضير بانتظار التقديم
   inventory: {
     turkishCoffee: true,
     karakTea: true,
@@ -44,24 +46,24 @@ const ANIMALS_SVG = {
 };
 
 const RECIPES = {
-  turkishCoffee: { name: "قهوة تركية أصيلة", type: "drinks", cup: "☕", req: ["بن", "ماء"], levelReq: 1 },
-  karakTea: { name: "كراميل كرك إماراتي", type: "drinks", cup: "🧋", req: ["شاي", "حليب", "هيل"], levelReq: 1 },
-  bobaLatte: { name: "ماتشا حبوب البوبا", type: "drinks", cup: "🧋", req: ["حليب", "ماتشا", "حبوب البوبا"], levelReq: 1 },
-  cappuccino: { name: "كابتشينو برغوة غنية", type: "drinks", cup: "☕", req: ["بن", "حليب", "رغوة"], levelReq: 1 },
-  moroccanTea: { name: "شاي مغربي بالنعناع", type: "drinks", cup: "🍵", req: ["شاي", "ماء", "نعناع"], levelReq: 1 },
+  turkishCoffee: { name: "قهوة تركية أصيلة", type: "drinks", cup: "☕", base: "كوب زجاجي", req: ["بن", "ماء"], levelReq: 1 },
+  karakTea: { name: "كراميل كرك إماراتي", type: "drinks", cup: "🧋", base: "كوب زجاجي", req: ["شاي", "حليب", "هيل"], levelReq: 1 },
+  bobaLatte: { name: "ماتشا حبوب البوبا", type: "drinks", cup: "🧋", base: "كوب زجاجي", req: ["حليب", "ماتشا", "حبوب البوبا"], levelReq: 1 },
+  cappuccino: { name: "كابتشينو برغوة غنية", type: "drinks", cup: "☕", base: "كوب زجاجي", req: ["بن", "حليب", "رغوة"], levelReq: 1 },
+  moroccanTea: { name: "شاي مغربي بالنعناع", type: "drinks", cup: "🍵", base: "كوب زجاجي", req: ["شاي", "ماء", "نعناع"], levelReq: 1 },
   
-  kunafa: { name: "كنافة نابلسية بالجبن", type: "bakery", cup: "🧀", req: ["عجين", "جبن", "قطر"], levelReq: 1 },
-  trilce: { name: "كيكة التريليتشا بالحليب", type: "bakery", cup: "🍰", req: ["قالب كيك", "حليب", "كراميل"], levelReq: 1 },
-  chocolateDonut: { name: "دونات الشوكولاتة الكيوت", type: "bakery", cup: "🍩", req: ["عجين", "شوكولاتة", "سكر"], levelReq: 1 },
-  strawberryCheesecake: { name: "تشيز كيك الفراولة", type: "bakery", cup: "🍰", req: ["جبن", "بسكويت", "فراولة"], levelReq: 1 },
-  baklava: { name: "بقلاوة بالفستق الحلبي", type: "bakery", cup: "🥮", req: ["عجين", "فستق", "قطر"], levelReq: 1 },
+  kunafa: { name: "كنافة نابلسية بالجبن", type: "bakery", cup: "🧀", base: "خبز العجين", req: ["عجين", "جبن", "قطر"], levelReq: 1 },
+  trilce: { name: "كيكة التريليتشا بالحليب", type: "bakery", cup: "🍰", base: "قالب كيك", req: ["قالب كيك", "حليب", "كراميل"], levelReq: 1 },
+  chocolateDonut: { name: "دونات الشوكولاتة الكيوت", type: "bakery", cup: "🍩", base: "خبز العجين", req: ["عجين", "شوكولاتة", "سكر"], levelReq: 1 },
+  strawberryCheesecake: { name: "تشيز كيك الفراولة", type: "bakery", cup: "🍰", base: "قالب كيك", req: ["جبن", "بسكويت", "فراولة"], levelReq: 1 },
+  baklava: { name: "بقلاوة بالفستق الحلبي", type: "bakery", cup: "🥮", base: "خبز العجين", req: ["عجين", "فستق", "قطر"], levelReq: 1 },
 
-  spanishLatte: { name: "سبانش لاتيه مثلج", type: "drinks", cup: "🥤", req: ["بن", "حليب مكثف", "ثلج"], levelReq: 2 },
-  matchaIceCream: { name: "آيس كريم الماتشا الفاخر", type: "bakery", cup: "🍨", req: ["حليب", "ماتشا", "كريمة"], levelReq: 2 },
-  pomegranateMojito: { name: "موهيتو الرمان المنعش", type: "drinks", cup: "🍹", req: ["صودا", "رمان", "نعناع"], levelReq: 2 },
-  saffronCake: { name: "كيكة الزعفران الملكية", type: "bakery", cup: "🧁", req: ["قالب كيك", "زعفران", "حليب مكثف"], levelReq: 3 },
-  moltenCake: { name: "مولتن كيك الشوكولاتة الساخنة", type: "bakery", cup: "🍫", req: ["شوكولاتة", "زببدة", "دقيق"], levelReq: 3 },
-  macaronBox: { name: "علبة ماكارون فرنسي ملون", type: "bakery", cup: "🍬", req: ["لوز مطحون", "سكر", "توت"], levelReq: 3 }
+  spanishLatte: { name: "سبانش لاتيه مثلج", type: "drinks", cup: "🥤", base: "كوب زجاجي", req: ["بن", "حليب مكثف", "ثلج"], levelReq: 2 },
+  matchaIceCream: { name: "آيس كريم الماتشا الفاخر", type: "bakery", cup: "🍨", base: "قالب كيك", req: ["حليب", "ماتشا", "كريمة"], levelReq: 2 },
+  pomegranateMojito: { name: "موهيتو الرمان المنعش", type: "drinks", cup: "🍹", base: "كوب زجاجي", req: ["صودا", "رمان", "نعناع"], levelReq: 2 },
+  saffronCake: { name: "كيكة الزعفران الملكية", type: "bakery", cup: "🧁", base: "قالب كيك", req: ["قالب كيك", "زعفران", "حليب مكثف"], levelReq: 3 },
+  moltenCake: { name: "مولتن كيك الشوكولاتة الساخنة", type: "bakery", cup: "🍫", base: "خبز العجين", req: ["شوكولاتة", "زببدة", "دقيق"], levelReq: 3 },
+  macaronBox: { name: "علبة ماكارون فرنسي ملون", type: "bakery", cup: "🍬", base: "قالب كيك", req: ["لوز مطحون", "سكر", "توت"], levelReq: 3 }
 };
 
 const CUSTOMERS_POOL = [
@@ -163,6 +165,7 @@ function startShift() {
 
 function startGameLoop() {
   activeOrders = [];
+  STATE.readyDishes = [];
   STATE.timer = 240;
   STATE.score = 0;
   STATE.coins = 100;
@@ -181,6 +184,7 @@ function startGameLoop() {
   spawnCustomer();
   spawnCustomer();
   switchStation("drinks");
+  renderReadyDishes();
 }
 
 function updateStats() {
@@ -237,8 +241,9 @@ function switchStation(stationName) {
   grid.innerHTML = "";
 
   if (stationName === "drinks") {
-    hintEl.textContent = "اختر المكونات لتحضير ألذ المشروبات والقهوة!";
+    hintEl.textContent = "اختر الكوب أولاً 🥛 ثم أضف المكونات!";
     renderIngredients([
+      { id: "كوب زجاجي", name: "كوب زجاجي أساسي", icon: "🥛", isBase: true },
       { id: "بن", name: "بن تركي", icon: "☕" },
       { id: "ماء", name: "ماء نقي", icon: "💧" },
       { id: "شاي", name: "شاي أحمر", icon: "🍃" },
@@ -254,12 +259,13 @@ function switchStation(stationName) {
       { id: "رمان", name: "حبات رمان طازجة", icon: "🔴" }
     ]);
   } else if (stationName === "bakery") {
-    hintEl.textContent = "اختر المعجنات والحلويات والصلصات للخبز!";
+    hintEl.textContent = "اختر العجين أو قالب الكيك أولاً 🍞 ثم أضف المكونات!";
     renderIngredients([
-      { id: "عجين", name: "عجين طازج", icon: "🍞" },
+      { id: "خبز العجين", name: "خبز / عجين طازج", icon: "🍞", isBase: true },
+      { id: "قالب كيك", name: "قالب كيك جاهز", icon: "🧁", isBase: true },
+      { id: "عجين", name: "عجين إضافي", icon: "🍞" },
       { id: "جبن", name: "جبن عكاوي", icon: "🧀" },
       { id: "قطر", name: "قطر / شيرة", icon: "🍯" },
-      { id: "قالب كيك", name: "قالب كيك", icon: "🧁" },
       { id: "كراميل", name: "صوص كراميل", icon: "🍮" },
       { id: "شوكولاتة", name: "شوكولاتة سائلة", icon: "🍫" },
       { id: "سكر", name: "سكر مطحون", icon: "✨" },
@@ -274,7 +280,7 @@ function switchStation(stationName) {
       { id: "توت", name: "توت بري", icon: "🫐" }
     ]);
   } else if (stationName === "serving") {
-    hintEl.textContent = "سلّم الطلبات للزبائن المنتظرين فوراً!";
+    hintEl.textContent = "اضغط على أي طبق جاهز على الطاولة لتقديمه للزبون المطلوب!";
     renderServingStation();
   } else if (stationName === "shop") {
     hintEl.textContent = "طوّر معدات الكافيه وافتح منتجات جديدة حسب مستواك!";
@@ -286,59 +292,111 @@ function renderIngredients(items) {
   const grid = document.getElementById("ingredientsGrid");
   items.forEach(item => {
     const card = document.createElement("div");
-    card.className = "ingredient-card";
+    card.className = `ingredient-card ${item.isBase ? 'base-item' : ''}`;
     card.innerHTML = `<div style="font-size:26px;">${item.icon}</div><div style="font-size:11.5px;font-weight:800;margin-top:4px;">${item.name}</div>`;
-    card.addEventListener("click", () => addIngredient(item.id));
+    card.addEventListener("click", () => {
+      if (item.isBase) {
+        STATE.selectedBase = item.id;
+        showToast(`تم اختيار القاعدة: ${item.name} 🥣`);
+      } else {
+        if (!STATE.selectedBase) {
+          showToast("الرجاء اختيار الكوب أو القاعدة أولاً! ⚠️");
+          return;
+        }
+        STATE.currentIngredients.push(item.id);
+      }
+      renderWorkbench();
+    });
     grid.appendChild(card);
   });
 }
 
-function addIngredient(id) {
-  STATE.currentRecipe.ingredients.push(id);
-  renderWorkbench();
-}
-
 function renderWorkbench() {
   const workbench = document.getElementById("currentItemVisual");
-  const ings = STATE.currentRecipe.ingredients;
-  if (ings.length === 0) {
-    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. أضف المكونات!</span>`;
+  const base = STATE.selectedBase;
+  const ings = STATE.currentIngredients;
+
+  if (!base && ings.length === 0) {
+    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. اختر الكوب أو القاعدة أولاً!</span>`;
     return;
   }
   workbench.innerHTML = `
-    <div style="font-weight:900; color:var(--pink-main); margin-bottom:4px;">المكونات الحالية: ${ings.join(" + ")}</div>
+    <div style="font-size:13px; font-weight:900; color:var(--pink-main); margin-bottom:4px;">
+      القاعدة: ${base || 'لم تحدد بعد ⚠️'} | المكونات: ${ings.join(" + ") || 'لا توجد'}
+    </div>
     <div style="margin-top:8px; display:flex; gap:8px; justify-content:center;">
-      <button class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="finishDish()">تحضير الطلب 🛎️</button>
+      <button class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="putOnReadyCounter()">وضع على طاولة التحضير 🛎️</button>
       <button class="btn-primary" style="padding:6px 14px; font-size:12px; background:#ff4757;" onclick="clearWorkbench()">مسح 🗑️</button>
     </div>
   `;
 }
 
 function clearWorkbench() {
-  STATE.currentRecipe.ingredients = [];
+  STATE.selectedBase = null;
+  STATE.currentIngredients = [];
   renderWorkbench();
 }
 
-function finishDish() {
-  const current = [...STATE.currentRecipe.ingredients].sort();
+function putOnReadyCounter() {
+  if (!STATE.selectedBase) {
+    showToast("يجب اختيار الكوب أو القاعدة أولاً! ❌");
+    return;
+  }
+
+  const current = [...STATE.currentIngredients].sort();
   let matchedKey = null;
 
   for (let [k, r] of Object.entries(RECIPES)) {
-    if (JSON.stringify(current) === JSON.stringify([...r.req].sort())) {
+    if (STATE.selectedBase === r.base && JSON.stringify(current) === JSON.stringify([...r.req].sort())) {
       matchedKey = k;
       break;
     }
   }
 
   if (!matchedKey) {
-    showToast("هذه الوصفة غير صحيحة! ❌");
+    showToast("المكونات أو القاعدة غير مطابقة لأي وصفة صحيحة! ❌");
     clearWorkbench();
     return;
   }
 
-  const orderIdx = activeOrders.findIndex(o => o.recipeKey === matchedKey);
+  // وضع الطلب على الطاولة الجاهزة
+  STATE.readyDishes.push({
+    recipeKey: matchedKey,
+    recipe: RECIPES[matchedKey]
+  });
+
+  showToast(`تم تجهيز طلب (${RECIPES[matchedKey].name}) ووضعه على الطاولة بانتظار التقديم! ✨`);
+  clearWorkbench();
+  renderReadyDishes();
+}
+
+function renderReadyDishes() {
+  const container = document.getElementById("sharedItemsContainer");
+  if (!container) return;
+
+  if (STATE.readyDishes.length === 0) {
+    container.innerHTML = `<span class="shared-empty-hint" style="font-size:11.5px; color:var(--text-muted);">لا توجد طلبات جاهزة على الطاولة حالياً..</span>`;
+    return;
+  }
+
+  container.innerHTML = "";
+  STATE.readyDishes.forEach((dish, index) => {
+    const badge = document.createElement("div");
+    badge.className = "ready-dish-badge";
+    badge.innerHTML = `<span>${dish.recipe.cup}</span> <span>${dish.recipe.name}</span> <span style="font-size:10px; background:var(--pink-subtle); padding:2px 6px; border-radius:6px; color:var(--pink-main);">قدّم للزبون 🛎️</span>`;
+    badge.addEventListener("click", () => deliverDish(index));
+    container.appendChild(badge);
+  });
+}
+
+function deliverDish(dishIndex) {
+  const dish = STATE.readyDishes[dishIndex];
+  const orderIdx = activeOrders.findIndex(o => o.recipeKey === dish.recipeKey);
+
   if (orderIdx !== -1) {
+    // وجدنا زبوناً يطلب هذا الصنف!
     activeOrders.splice(orderIdx, 1);
+    STATE.readyDishes.splice(dishIndex, 1);
     STATE.score += 120;
     STATE.coins += 25;
     STATE.servedCount++;
@@ -349,17 +407,18 @@ function finishDish() {
     }
 
     updateStats();
-    showToast("تم تسليم الطلب بنجاح! +120 نقطة ⭐");
+    showToast("تم تسليم الطلب للزبون بنجاح! +120 نقطة ⭐");
   } else {
-    showToast("لا يوجد زبون يطلب هذا الصنف حالياً!");
+    showToast("لا يوجد أي زبون يطلب هذا الصنف حالياً! انتظر زبوناً مناسباً أو احتفظ به.");
   }
-  clearWorkbench();
+
+  renderReadyDishes();
   renderOrdersRack();
 }
 
 function renderServingStation() {
   const grid = document.getElementById("ingredientsGrid");
-  grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; font-weight:800; color:var(--pink-main); padding:20px;">انظر إلى تذاكر الزبائن بالأعلى وقم بتجهيز وتقديم طلباتهم من محطات المشروبات والحلويات! ✨</div>`;
+  grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; font-weight:800; color:var(--pink-main); padding:20px;">انظر إلى الطلبات الجاهزة بالأعلى في "الطاولة الجاهزة" واضغط عليها لتقديمها للزبائن فوراً! ✨</div>`;
 }
 
 function renderShopStation() {
@@ -430,12 +489,18 @@ function renderOrdersRack() {
   rack.innerHTML = "";
   activeOrders.forEach(ord => {
     const pct = (ord.patience / ord.maxPatience) * 100;
+    const custAvatarSvg = ANIMALS_SVG[ord.customer.avatar] || ANIMALS_SVG["cat"];
     const card = document.createElement("div");
     card.className = "order-card";
     card.innerHTML = `
-      <div style="font-size:12px; font-weight:900;">${ord.customer.name}</div>
+      <div class="order-card-header">
+        <div class="order-customer-avatar">${custAvatarSvg}</div>
+        <div>
+          <div style="font-size:12px; font-weight:900;">${ord.customer.name}</div>
+        </div>
+      </div>
       <div style="font-size:13px; color:var(--pink-main); font-weight:900;">${ord.recipe.cup} ${ord.recipe.name}</div>
-      <div style="font-size:11px; color:#555; background:#fff7fa; padding:3px 6px; border-radius:6px; margin:3px 0;">المكونات: ${ord.recipe.req.join(" + ")}</div>
+      <div style="font-size:11px; color:#555; background:#fff7fa; padding:3px 6px; border-radius:6px; margin:2px 0;">قاعدة: ${ord.recipe.base} | المكونات: ${ord.recipe.req.join(" + ")}</div>
       <div class="patience-bar-bg"><div class="patience-bar-fill" style="width: ${pct}%;"></div></div>
       <div style="font-size:10px; color:var(--text-muted);">${ord.patience} ثانية متبقية</div>
     `;
