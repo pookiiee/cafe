@@ -1,6 +1,6 @@
 /* =========================================================================
    كافيه بوكي البنات | Pookie Cozy Cafe Rush
-   Complete Logic with Exact visual style matching reference images
+   Fixed: No auto-selection + Recipes only spawn for unlocked items/levels
    ========================================================================= */
 
 const STATE = {
@@ -31,10 +31,7 @@ const STATE = {
     baklava: true,
     spanishLatte: false,
     matchaIceCream: false,
-    pomegranateMojito: false,
-    saffronCake: false,
-    moltenCake: false,
-    macaronBox: false
+    pomegranateMojito: false
   }
 };
 
@@ -46,21 +43,21 @@ const ANIMALS_SVG = {
 };
 
 const RECIPES = {
-  turkishCoffee: { name: "قهوة تركية", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "ماء نقي"], levelReq: 1 },
-  karakTea: { name: "كراميل كرك", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["شاي", "حليب نقـي", "هيل"], levelReq: 1 },
-  bobaLatte: { name: "ماتشا بوبا", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["حليب نقـي", "ماتشا", "بوبا تابيوكا"], levelReq: 1 },
-  cappuccino: { name: "كابتشينو برغوة", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "حليب نقـي", "كريمة خفق"], levelReq: 1 },
-  moroccanTea: { name: "شاي مغربي", type: "drinks", cup: "🍵", base: "كوب فارغ", req: ["شاي", "ماء نقي", "نعناع"], levelReq: 1 },
+  turkishCoffee: { name: "قهوة تركية", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "ماء نقي"], levelReq: 1, shopKey: null },
+  karakTea: { name: "كراميل كرك", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["شاي", "حليب نقـي", "هيل"], levelReq: 1, shopKey: null },
+  bobaLatte: { name: "ماتشا بوبا", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["حليب نقـي", "ماتشا", "بوبا تابيوكا"], levelReq: 1, shopKey: null },
+  cappuccino: { name: "كابتشينو برغوة", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "حليب نقـي", "كريمة خفق"], levelReq: 1, shopKey: null },
+  moroccanTea: { name: "شاي مغربي", type: "drinks", cup: "🍵", base: "كوب فارغ", req: ["شاي", "ماء نقي", "نعناع"], levelReq: 1, shopKey: null },
   
-  kunafa: { name: "كنافة بالجبن", type: "bakery", cup: "🧀", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "جبن عكاوي", "عسل صافي"], levelReq: 1 },
-  trilce: { name: "تريليتشا بالحليب", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "حليب نقـي", "صوص كراميل"], levelReq: 1 },
-  chocolateDonut: { name: "دونات شوكولاتة", type: "bakery", cup: "🍩", base: "عجينة دونات", req: ["عجينة دونات", "شوكولاتة", "سكر مطحون"], levelReq: 1 },
-  strawberryCheesecake: { name: "تشيز كيك فراولة", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "بسكويت", "فراولة"], levelReq: 1 },
-  baklava: { name: "بقلاوة بالفستق", type: "bakery", cup: "🥮", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "فستق", "عسل صافي"], levelReq: 1 },
+  kunafa: { name: "كنافة بالجبن", type: "bakery", cup: "🧀", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "جبن عكاوي", "عسل صافي"], levelReq: 1, shopKey: null },
+  trilce: { name: "تريليتشا بالحليب", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "حليب نقـي", "صوص كراميل"], levelReq: 1, shopKey: null },
+  chocolateDonut: { name: "دونات شوكولاتة", type: "bakery", cup: "🍩", base: "عجينة دونات", req: ["عجينة دونات", "شوكولاتة", "سكر مطحون"], levelReq: 1, shopKey: null },
+  strawberryCheesecake: { name: "تشيز كيك فراولة", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "بسكويت", "فراولة"], levelReq: 1, shopKey: null },
+  baklava: { name: "بقلاوة بالفستق", type: "bakery", cup: "🥮", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "فستق", "عسل صافي"], levelReq: 1, shopKey: null },
 
-  spanishLatte: { name: "سبانش لاتيه", type: "drinks", cup: "🥤", base: "كوب فارغ", req: ["قهوة", "حليب مكثف", "ثلج"], levelReq: 2 },
-  matchaIceCream: { name: "آيس كريم ماتشا", type: "bakery", cup: "🍨", base: "كرة آيس كريم", req: ["حليب نقـي", "ماتشا", "كريمة خفق"], levelReq: 2 },
-  pomegranateMojito: { name: "موهيتو رمان", type: "drinks", cup: "🍹", base: "شاي مثلج", req: ["صودا فوارة", "رمان", "نعناعقة"], levelReq: 2 }
+  spanishLatte: { name: "سبانش لاتيه", type: "drinks", cup: "🥤", base: "كوب فارغ", req: ["قهوة", "حليب مكثف", "ثلج"], levelReq: 2, shopKey: "spanishLatte" },
+  matchaIceCream: { name: "آيس كريم ماتشا", type: "bakery", cup: "🍨", base: "كرة آيس كريم", req: ["حليب نقـي", "ماتشا", "كريمة خفق"], levelReq: 2, shopKey: "matchaIceCream" },
+  pomegranateMojito: { name: "موهيتو رمان", type: "drinks", cup: "🍹", base: "شاي مثلج", req: ["صودا فوارة", "رمان", "نعناع"], levelReq: 2, shopKey: "pomegranateMojito" }
 };
 
 const CUSTOMERS_POOL = [
@@ -195,8 +192,18 @@ function updateStats() {
 }
 
 function spawnCustomer() {
-  const unlockedKeys = Object.keys(RECIPES).filter(k => STATE.inventory[k] || RECIPES[k].levelReq <= STATE.level);
-  const recipeKey = unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
+  // تصفية الوصفات المتاحة فقط والتي تم شراؤها أو فتحها فعلياً بناءً على المخزون والمستوى
+  const availableRecipes = Object.keys(RECIPES).filter(k => {
+    const rec = RECIPES[k];
+    if (rec.shopKey) {
+      return STATE.inventory[rec.shopKey] === true;
+    }
+    return rec.levelReq <= STATE.level;
+  });
+
+  if (availableRecipes.length === 0) return;
+
+  const recipeKey = availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
   const customer = CUSTOMERS_POOL[Math.floor(Math.random() * CUSTOMERS_POOL.length)];
 
   const newOrder = {
@@ -248,14 +255,14 @@ function switchStation(stationName) {
       { id: "بوبا تابيوكا", name: "بوبا تابيوكا", icon: "🧋", unlocked: true },
       { id: "كريمة خفق", name: "كريمة خفق", icon: "🍦", unlocked: true },
       { id: "قهوة", name: "قهوة", icon: "☕", unlocked: true },
-      { id: "صوص كراميل", name: "صوص كراميل", icon: "🍮", unlocked: false, level: 2 },
-      { id: "شاي مثلج", name: "شاي مثلج", icon: "🧊", unlocked: false, level: 2 },
+      { id: "صوص كراميل", name: "صوص كراميل", icon: "🍮", unlocked: STATE.inventory.trilce, level: 2 },
+      { id: "شاي مثلج", name: "شاي مثلج", icon: "🧊", unlocked: STATE.inventory.pomegranateMojito, level: 2 },
       { id: "خوخ", name: "خوخ", icon: "🍑", unlocked: false, level: 2 },
-      { id: "شوكولاتة", name: "شوكولاتة", icon: "🍫", unlocked: false, level: 2 },
+      { id: "شوكولاتة", name: "شوكولاتة", icon: "🍫", unlocked: true },
       { id: "مارشميلو", name: "مارشميلو", icon: "☁️", unlocked: false, level: 2 },
       { id: "ليمون", name: "ليمون", icon: "🍋", unlocked: false, level: 2 },
-      { id: "نعناع", name: "نعناع", icon: "🌿", unlocked: false, level: 2 },
-      { id: "صودا فوارة", name: "صودا فوارة", icon: "🥤", unlocked: false, level: 2 }
+      { id: "نعناع", name: "نعناع", icon: "🌿", unlocked: true },
+      { id: "صودا فوارة", name: "صودا فوارة", icon: "🥤", unlocked: STATE.inventory.pomegranateMojito, level: 2 }
     ]);
   } else if (stationName === "bakery") {
     hintEl.textContent = "اختر العجين أو القالب واصنع الحلويات!";
@@ -269,9 +276,9 @@ function switchStation(stationName) {
       { id: "مكعب زبدة", name: "مكعب زبدة", icon: "🧈", unlocked: true },
       { id: "عسل صافي", name: "عسل صافي", icon: "🍯", unlocked: true },
       { id: "عجينة كوكيز", name: "عجينة كوكيز", icon: "🍪", unlocked: false, level: 2 },
-      { id: "قطع شوكولاتة", name: "قطع شوكولاتة", icon: "🍫", unlocked: false, level: 2 },
+      { id: "قطع شوكولاتة", name: "قطع شوكولاتة", icon: "🍫", unlocked: true },
       { id: "عجينة وافل", name: "عجينة وافل", icon: "🧇", unlocked: false, level: 2 },
-      { id: "كرة آيس كريم", name: "كرة آيس كريم", icon: "🍦", isBase: true, unlocked: false, level: 2 }
+      { id: "كرة آيس كريم", name: "كرة آيس كريم", icon: "🍦", isBase: true, unlocked: STATE.inventory.matchaIceCream, level: 2 }
     ]);
   } else if (stationName === "serving") {
     hintEl.textContent = "اضغط على أي طبق جاهز على الطاولة لتقديمه للزبون المطلوب!";
@@ -286,7 +293,8 @@ function renderIngredients(items) {
   const grid = document.getElementById("ingredientsGrid");
   items.forEach(item => {
     const card = document.createElement("div");
-    card.className = `ingredient-card ${item.isBase ? 'base-item' : ''} ${!item.unlocked ? 'locked' : ''}`;
+    const isBaseSelected = item.isBase && STATE.selectedBase === item.id;
+    card.className = `ingredient-card ${item.isBase ? 'base-item' : ''} ${!item.unlocked ? 'locked' : ''} ${isBaseSelected ? 'selected-active' : ''}`;
     
     let lockHtml = !item.unlocked ? `<div class="ingredient-lock-status">🔒 مقفل</div>` : '';
     
@@ -304,12 +312,15 @@ function renderIngredients(items) {
       if (item.isBase) {
         STATE.selectedBase = item.id;
         showToast(`تم اختيار القاعدة: ${item.icon} ${item.name} 🥣`);
+        // إعادة رسم المحطة لتحديث الإطار المميز للقاعدة المختارة فقط
+        switchStation(STATE.activeStation);
       } else {
         if (!STATE.selectedBase) {
           showToast("الرجاء اختيار الكوب أو القاعدة أولاً! ⚠️");
           return;
         }
         STATE.currentIngredients.push(item.id);
+        showToast(`أضفت: ${item.icon} ${item.name}`);
       }
       renderWorkbench();
     });
@@ -344,6 +355,7 @@ function clearWorkbench() {
   STATE.selectedBase = null;
   STATE.currentIngredients = [];
   renderWorkbench();
+  switchStation(STATE.activeStation);
 }
 
 function putOnReadyCounter() {
