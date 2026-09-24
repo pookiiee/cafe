@@ -1,6 +1,6 @@
 /* =========================================================================
    كافيه بوكي البنات | Pookie Cozy Cafe Rush
-   Fixed: All customer recipes are strictly matched with available ingredients
+   Updated: Baking station requires a 5-second baking timer before adding toppings!
    ========================================================================= */
 
 const STATE = {
@@ -18,6 +18,8 @@ const STATE = {
   selectedBase: null,
   currentIngredients: [],
   readyDishes: [],
+  isBaking: false,       // حالة الخبز الحالية
+  bakingProgress: 0,     // نسبة تقدم الخبز
   inventory: {
     turkishCoffee: true,
     karakTea: true,
@@ -42,7 +44,6 @@ const ANIMALS_SVG = {
   panda: `<svg class="animal" viewBox="0 0 64 64"><circle cx="32" cy="38" r="18" fill="#ffffff"/><ellipse cx="21" cy="32" rx="7" ry="6" fill="#222" transform="rotate(-15 21 32)"/><ellipse cx="43" cy="32" rx="7" ry="6" fill="#222" transform="rotate(15 43 32)"/><circle cx="23" cy="32" r="2" fill="#fff"/><circle cx="41" cy="32" r="2" fill="#fff"/><circle cx="17" cy="18" r="6" fill="#222"/><circle cx="47" cy="18" r="6" fill="#222"/><circle cx="32" cy="41" r="2.5" fill="#222"/><path d="M27,47 Q32,51 37,47" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`
 };
 
-// جميع الوصفات مطابقة 100% للمكونات الموجودة في المحطات
 const RECIPES = {
   turkishCoffee: { name: "قهوة تركية", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "حليب نقـي"], levelReq: 1, shopKey: null },
   karakTea: { name: "كراميل كرك", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["شاي", "حليب نقـي"], levelReq: 1, shopKey: null },
@@ -73,6 +74,7 @@ const CUSTOMERS_POOL = [
 let activeOrders = [];
 let gameInterval = null;
 let orderSpawnerTimer = null;
+let bakingIntervalTimer = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   renderAvatarChoices();
@@ -261,19 +263,19 @@ function switchStation(stationName) {
       { id: "شاي", name: "شاي", icon: "🍵", unlocked: true }
     ]);
   } else if (stationName === "bakery") {
-    hintEl.textContent = "اختر العجين أو القالب واصنع الحلويات!";
+    hintEl.textContent = "اختر العجينة أو القالب لتخبزه في الفرن أولاً (يستغرق 5 ثوانٍ)! 🔥";
     renderIngredients([
-      { id: "عجينة دونات", name: "عجينة دونات", icon: "🍩", isBase: true, unlocked: true },
-      { id: "مخبوز بالفرن", name: "مخبوز بالفرن", icon: "🔥", isBase: true, unlocked: true },
+      { id: "عجينة دونات", name: "عجينة دونات", icon: "🍩", isBase: true, unlocked: true, needsBake: true },
+      { id: "مخبوز بالفرن", name: "مخبوز بالفرن", icon: "🔥", isBase: true, unlocked: true, needsBake: true },
+      { id: "طبقات كيك", name: "طبقات كيك", icon: "🍰", isBase: true, unlocked: true, needsBake: true },
+      { id: "كرة آيس كريم", name: "كرة آيس كريم", icon: "🍦", isBase: true, unlocked: STATE.inventory.matchaIceCream, level: 2, needsBake: false },
       { id: "تغطية وردية", name: "تغطية وردية", icon: "🌸", unlocked: true },
       { id: "سبرنكلز ملون", name: "سبرنكلز ملون", icon: "✨", unlocked: true },
-      { id: "طبقات كيك", name: "طبقات كيك", icon: "🍰", isBase: true, unlocked: true },
       { id: "مكعب زبدة", name: "مكعب زبدة", icon: "🧈", unlocked: true },
       { id: "عسل صافي", name: "عسل صافي", icon: "🍯", unlocked: true },
       { id: "شوكولاتة", name: "شوكولاتة", icon: "🍫", unlocked: true },
       { id: "فراولة", name: "فراولة", icon: "🍓", unlocked: true },
-      { id: "كريمة خفق", name: "كريمة خفق", icon: "🍦", unlocked: true },
-      { id: "كرة آيس كريم", name: "كرة آيس كريم", icon: "🍦", isBase: true, unlocked: STATE.inventory.matchaIceCream, level: 2 }
+      { id: "كريمة خفق", name: "كريمة خفق", icon: "🍦", unlocked: true }
     ]);
   } else if (stationName === "serving") {
     hintEl.textContent = "اضغط على أي طبق جاهز على الطاولة لتقديمه للزبون المطلوب!";
@@ -305,12 +307,22 @@ function renderIngredients(items) {
         return;
       }
       if (item.isBase) {
-        STATE.selectedBase = item.id;
-        showToast(`تم اختيار القاعدة: ${item.icon} ${item.name} 🥣`);
-        switchStation(STATE.activeStation);
+        if (item.needsBake) {
+          // بدء عملية الخبز في الفرن لمدة 5 ثوانٍ
+          startBakingProcess(item.id, item.name, item.icon);
+        } else {
+          STATE.selectedBase = item.id;
+          STATE.isBaking = false;
+          showToast(`تم اختيار القاعدة: ${item.icon} ${item.name} 🥣`);
+          switchStation(STATE.activeStation);
+        }
       } else {
         if (!STATE.selectedBase) {
-          showToast("الرجاء اختيار الكوب أو القاعدة أولاً! ⚠️");
+          showToast("الرجاء اختيار العجينة أو القاعدة أولاً! ⚠️");
+          return;
+        }
+        if (STATE.isBaking) {
+          showToast("الفرن يعمل حالياً! انتظر حتى يكتمل الخبز ⏳🔥");
           return;
         }
         STATE.currentIngredients.push(item.id);
@@ -322,30 +334,73 @@ function renderIngredients(items) {
   });
 }
 
+function startBakingProcess(baseId, baseName, baseIcon) {
+  if (STATE.isBaking) return;
+  
+  STATE.isBaking = true;
+  STATE.bakingProgress = 0;
+  STATE.selectedBase = `${baseName} (يتم الخبز بالفرن 🔥)`;
+  renderWorkbench();
+  showToast(`وضعنا "${baseName}" في الفرن.. جاري الخبز (5 ثوانٍ).. 🔥`);
+
+  if (bakingIntervalTimer) clearInterval(bakingIntervalTimer);
+
+  const totalSteps = 5;
+  let currentStep = 0;
+
+  bakingIntervalTimer = setInterval(() => {
+    currentStep++;
+    STATE.bakingProgress = (currentStep / totalSteps) * 100;
+
+    if (currentStep >= totalSteps) {
+      clearInterval(bakingIntervalTimer);
+      STATE.isBaking = false;
+      STATE.selectedBase = baseId; // تم اعتماد القاعدة الناضجة
+      renderWorkbench();
+      showToast(`✨ استوى "${baseName}" بالفرن تماماً! يمكنك الآن إضافة المكونات والصوصات 🍰🧁`);
+    } else {
+      renderWorkbench();
+    }
+  }, 1000);
+}
+
 function renderWorkbench() {
   const workbench = document.getElementById("currentItemVisual");
   const base = STATE.selectedBase;
   const ings = STATE.currentIngredients;
 
   if (!base && ings.length === 0) {
-    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. اختر القواعد والمكونات!</span>`;
+    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. اختر القواعد واخبزها بالفرن أولاً!</span>`;
     return;
   }
 
   const ingsHTML = ings.map(i => `<span style="background:#fff; padding:2px 6px; border-radius:6px; border:1px solid #ffd1dc;">${i}</span>`).join(" ");
 
+  let bakeProgressHtml = "";
+  if (STATE.isBaking) {
+    bakeProgressHtml = `
+      <div style="width: 100%; max-width: 220px; background: #eee; height: 8px; border-radius: 10px; margin: 8px auto; overflow: hidden;">
+        <div style="background: #ff4757; height: 100%; width: ${STATE.bakingProgress}%; transition: width 1s linear;"></div>
+      </div>
+      <div style="font-size: 11px; color: #ff4757; font-weight: 800;">جاري الخبز في الفرن... ⏳🔥</div>
+    `;
+  }
+
   workbench.innerHTML = `
     <div style="font-size:13px; font-weight:900; color:var(--pink-main); margin-bottom:4px; display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
       <span>القاعدة: ${base || 'لم تُحدد'}</span> | <span>المكونات:</span> ${ingsHTML || 'لا توجد'}
     </div>
+    ${bakeProgressHtml}
     <div style="margin-top:6px; display:flex; gap:8px; justify-content:center;">
-      <button class="btn-primary" style="padding:5px 12px; font-size:12px;" onclick="putOnReadyCounter()">وضع على الطاولة الجاهزة 🛎️</button>
+      <button class="btn-primary" style="padding:5px 12px; font-size:12px;" ${STATE.isBaking ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''} onclick="putOnReadyCounter()">وضع على الطاولة الجاهزة 🛎️</button>
       <button class="btn-primary" style="padding:5px 12px; font-size:12px; background:#ff4757;" onclick="clearWorkbench()">مسح 🗑️</button>
     </div>
   `;
 }
 
 function clearWorkbench() {
+  if (bakingIntervalTimer) clearInterval(bakingIntervalTimer);
+  STATE.isBaking = false;
   STATE.selectedBase = null;
   STATE.currentIngredients = [];
   renderWorkbench();
@@ -353,8 +408,12 @@ function clearWorkbench() {
 }
 
 function putOnReadyCounter() {
+  if (STATE.isBaking) {
+    showToast("انتظر حتى ينتهي الخبز في الفرن أولاً! ⏳🔥");
+    return;
+  }
   if (!STATE.selectedBase) {
-    showToast("يجب اختيار الكوب أو القاعدة أولاً! ❌");
+    showToast("يجب اختيار القاعدة أو الكوب أولاً! ❌");
     return;
   }
 
@@ -527,6 +586,7 @@ function renderOrdersRack() {
 function endGame() {
   clearInterval(gameInterval);
   clearInterval(orderSpawnerTimer);
+  if (bakingIntervalTimer) clearInterval(bakingIntervalTimer);
   document.getElementById("gameScreen").classList.remove("active");
   document.getElementById("resultsScreen").classList.add("active");
   document.getElementById("resultScore").textContent = STATE.score;
