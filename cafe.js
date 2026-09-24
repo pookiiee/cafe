@@ -1,6 +1,6 @@
 /* =========================================================================
    كافيه بوكي البنات | Pookie Cozy Cafe Rush
-   Complete Core Logic + Massive Menu + Shop + Levels + 60s Patience + Beep
+   Complete Core Logic + Massive Menu + Shop + Levels + 60s Patience + Beep (Arabic)
    ========================================================================= */
 
 const STATE = {
@@ -203,7 +203,7 @@ function spawnCustomer() {
     recipeKey: recipeKey,
     recipe: RECIPES[recipeKey],
     customer: customer,
-    patience: 60, // 60 ثانية صبر الزبون الدقيقة
+    patience: 60, // 60 ثانية صبر الزبون
     maxPatience: 60
   };
 
@@ -435,6 +435,7 @@ function renderOrdersRack() {
     card.innerHTML = `
       <div style="font-size:12px; font-weight:900;">${ord.customer.name}</div>
       <div style="font-size:13px; color:var(--pink-main); font-weight:900;">${ord.recipe.cup} ${ord.recipe.name}</div>
+      <div style="font-size:11px; color:#555; background:#fff7fa; padding:3px 6px; border-radius:6px; margin:3px 0;">المكونات: ${ord.recipe.req.join(" + ")}</div>
       <div class="patience-bar-bg"><div class="patience-bar-fill" style="width: ${pct}%;"></div></div>
       <div style="font-size:10px; color:var(--text-muted);">${ord.patience} ثانية متبقية</div>
     `;
