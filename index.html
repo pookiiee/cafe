@@ -12,8 +12,8 @@
 
   <div class="bg-decorations">
     <div class="floating-icon" style="top: 10%; left: 15%; animation-delay: 0s;">🌸</div>
-    <div class="floating-icon" style="top: 70% আনন্দের; left: 80%; animation-delay: 3s;">✨</div>
-    <div class="floating-icon" style="top: 40% ; left: 85%; animation-delay: 6s;">🧋</div>
+    <div class="floating-icon" style="top: 70%; left: 80%; animation-delay: 3s;">✨</div>
+    <div class="floating-icon" style="top: 40%; left: 85%; animation-delay: 6s;">🧋</div>
     <div class="floating-icon" style="top: 80%; left: 20%; animation-delay: 9s;">☕</div>
   </div>
 
@@ -33,9 +33,9 @@
 
     <div class="game-stats-bar" id="gameStatsBar">
       <div class="stat-item">النقاط: <span class="stat-badge" id="statScore">0</span></div>
-      <div class="stat-item">الأرباح: <span class="stat-badge gold" id="statCoins">50 🪙</span></div>
+      <div class="stat-item">الأرباح: <span class="stat-badge gold" id="statCoins">100 🪙</span></div>
       <div class="stat-item">المستوى: <span class="stat-badge sky" id="statLevel">1 ⭐</span></div>
-      <div class="stat-item">الوقـت: <span class="stat-badge timer" id="statTimer">3:00</span></div>
+      <div class="stat-item">الوقـت: <span class="stat-badge timer" id="statTimer">4:00</span></div>
     </div>
 
     <!-- شاشة البداية (اللوبي) -->
@@ -106,11 +106,9 @@
           </div>
         </div>
 
-        <div class="shared-counter-box" id="sharedCounterBox">
+        <div class="shared-counter-box" id="sharedCounterBox" style="display:none;">
           <div class="shared-counter-title">✨ طاولة التحضير المشتركة مع صديقاتك:</div>
-          <div class="shared-items-slots" id="sharedItemsContainer">
-            <span class="shared-empty-hint">لا توجد أطباق جاهزة على الطاولة حالياً.. اطبخوا وشاركوا معاً! 🍰</span>
-          </div>
+          <div class="shared-items-slots" id="sharedItemsContainer"></div>
         </div>
 
         <div class="ingredients-grid" id="ingredientsGrid"></div>
@@ -118,7 +116,7 @@
 
       <div class="quick-shouts-bar">
         <button class="shout-btn" data-shout="أحتاج حليب بسرعة! 🥛">🥛 أطلب حليب</button>
-        <button class="shout-btn" data-shout="جهزت طلب زبون VIP! 👑">👑 طلبية VIP</button>
+        <button class="shout-btn" data-shout="جهزت طلب زبون VIP! 👑">👑 طلبية مميزة</button>
         <button class="shout-btn" data-shout="يا بنات الكافيه زحمة! 🏃‍♀️">🏃‍♀️ الكافيه زحمة</button>
         <button class="shout-btn" data-shout="شكراً لطباختنا الماهرة! 💕">💕 شكراً لكم</button>
       </div>
@@ -133,7 +131,7 @@
           <span class="star-anim" style="animation-delay: 0.3s;">⭐</span>
         </div>
         <h2 style="font-size: 24px; color: var(--pink-main); margin-bottom: 6px;">انتهى الشفت بنجاح!</h2>
-        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">أداء رائع جداً أنتِ وصديقاتكِ في كافيه بوكي!</p>
+        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">أداء رائع جداً في كافيه بوكي!</p>
         
         <div class="results-stats-grid">
           <div class="results-box">
