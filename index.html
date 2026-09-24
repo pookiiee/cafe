@@ -38,7 +38,7 @@
       <div class="stat-item">الوقـت: <span class="stat-badge timer" id="statTimer">4:00</span></div>
     </div>
 
-    <!-- شاشة البداية (اللوبي) -->
+    <!-- شاشة البداية -->
     <main class="screen-panel active" id="lobbyScreen">
       <div class="lobby-card">
         <div class="lobby-hero-art">
@@ -96,13 +96,12 @@
       <div class="station-content-panel">
         <div class="station-header">
           <span class="station-title" id="stationTitleName">محطة المشروبات الساخنة والباردة</span>
-          <span class="station-step-hint" id="stationHint">اختر الكوب أو القاعدة أولاً..</span>
+          <span class="station-step-hint" id="stationHint">اختر المكونات المناسبة..</span>
         </div>
 
         <div class="crafting-workbench" id="craftingWorkbench">
           <div class="current-item-visual" id="currentItemVisual">
-            <span class="item-cup-preview" style="opacity: 0.4;">🥛</span>
-            <span style="font-size: 12.5px; color: var(--text-muted);">طاولة التحضير فارغة.. اختر الكوب/القاعدة أولاً!</span>
+            <span style="font-size: 12.5px; color: var(--text-muted);">طاولة التحضير فارغة.. اختر القواعد والمكونات!</span>
           </div>
         </div>
 
@@ -116,11 +115,14 @@
         <div class="ingredients-grid" id="ingredientsGrid"></div>
       </div>
 
+      <!-- صرخات كما في التصميم المطلوب -->
       <div class="quick-shouts-bar">
-        <button class="shout-btn" data-shout="أحتاج حليب بسرعة! 🥛">🥛 أطلب حليب</button>
-        <button class="shout-btn" data-shout="جهزت طلب زبون VIP! 👑">👑 طلبية مميزة</button>
-        <button class="shout-btn" data-shout="يا بنات الكافيه زحمة! 🏃‍♀️">🏃‍♀️ الكافيه زحمة</button>
-        <button class="shout-btn" data-shout="شكراً لطباختنا الماهرة! 💕">💕 شكراً لكم</button>
+        <span style="font-weight: 900; font-size: 12px; color: var(--text-muted); align-self: center;">صرخات:</span>
+        <button class="shout-btn" data-shout="عجلوا بالطلب! ⏳">⏳ عجلوا بالطلب!</button>
+        <button class="shout-btn" data-shout="الماتشا جاهزة! 🍵">🍵 الماتشا جاهزة!</button>
+        <button class="shout-btn" data-shout="الكيكة جهزت! 🧁">🧁 الكيكة جهزت!</button>
+        <button class="shout-btn" data-shout="كفوووو! ❤️">❤️ كفوووو!</button>
+        <button class="shout-btn" data-shout="الزبون بيعصب! 🔥">🔥 الزبون بيعصب!</button>
       </div>
     </main>
 
