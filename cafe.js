@@ -1,6 +1,6 @@
 /* =========================================================================
-   كافيه البنات المشترك | Pookie Cozy Cafe Rush
-   Core Logic & MQTT Multiplayer + Kawaii Animated Animals + Shop
+   كافيه بوكي البنات | Pookie Cozy Cafe Rush
+   Complete Core Logic + Massive Menu + Shop + Levels + 60s Patience + Beep
    ========================================================================= */
 
 const STATE = {
@@ -9,56 +9,71 @@ const STATE = {
   roomCode: null,
   isHost: false,
   score: 0,
-  coins: 50,
+  coins: 100,
   level: 1,
-  timer: 180,
-  combo: 0,
-  maxCombo: 0,
+  timer: 240,
   servedCount: 0,
   missedCount: 0,
-  vipCount: 0,
   activeStation: "drinks",
-  currentRecipe: { base: null, ingredients: [], machineDone: false },
+  currentRecipe: { ingredients: [] },
   inventory: {
-    milk: true,
-    matcha: true,
-    boba: true,
-    strawberry: false,
-    chocolate: false,
-    caramel: false,
-    cookieDough: true,
-    cakeBatter: true
-  },
-  machines: {
-    bobaMaker: { level: 1, maxLevel: 3, busy: false, progress: 0, cost: 40 },
-    oven: { level: 1, maxLevel: 3, busy: false, progress: 0, cost: 50 }
+    turkishCoffee: true,
+    karakTea: true,
+    bobaLatte: true,
+    cappuccino: true,
+    moroccanTea: true,
+    kunafa: true,
+    trilce: true,
+    chocolateDonut: true,
+    strawberryCheesecake: true,
+    baklava: true,
+    spanishLatte: false,
+    matchaIceCream: false,
+    pomegranateMojito: false,
+    saffronCake: false,
+    moltenCake: false,
+    macaronBox: false
   }
 };
 
-// أيقونات الحيوانات الكيوت بصيغة SVG الحية
 const ANIMALS_SVG = {
-  cat: `<svg class="animal" viewBox="0 0 64 64"><g class="a-body"><ellipse cx="32" cy="36" rx="20" ry="18" fill="#ffd1dc"/><polygon points="16,22 22,6 30,20" fill="#ffb3c6" class="a-ear-l"/><polygon points="48,22 42,6 34,20" fill="#ffb3c6" class="a-ear-r"/><circle cx="24" cy="32" r="3" fill="#3b2d35" class="a-eyes"/><circle cx="40" cy="32" r="3" fill="#3b2d35" class="a-eyes"/><path d="M29,38 Q32,41 35,38" fill="none" stroke="#3b2d35" stroke-width="2" stroke-linecap="round"/><ellipse cx="32" cy="35" rx="2" ry="1.2" fill="#ff7597"/></g></svg>`,
-  bunny: `<svg class="animal" viewBox="0 0 64 64"><g class="a-body"><ellipse cx="32" cy="38" rx="19" ry="17" fill="#ffffff"/><ellipse cx="23" cy="14" rx="4" ry="12" fill="#ffd1dc" class="a-ear-l"/><ellipse cx="41" cy="14" rx="4" ry="12" fill="#ffd1dc" class="a-ear-r"/><circle cx="25" cy="34" r="2.5" fill="#3b2d35" class="a-eyes"/><circle cx="39" cy="34" r="2.5" fill="#3b2d35" class="a-eyes"/><polygon points="32,38 30,36 34,36" fill="#ff7597"/></g></svg>`,
-  bear: `<svg class="animal" viewBox="0 0 64 64"><g class="a-body"><circle cx="32" cy="36" r="18" fill="#d7ccc8"/><circle cx="18" cy="22" r="6" fill="#bcaaa4" class="a-ear-l"/><circle cx="46" cy="22" r="6" fill="#bcaaa4" class="a-ear-r"/><circle cx="24" cy="33" r="2.5" fill="#3b2d35" class="a-eyes"/><circle cx="40" cy="33" r="2.5" fill="#3b2d35" class="a-eyes"/><ellipse cx="32" cy="38" rx="5" ry="3.5" fill="#efebe9"/><circle cx="32" cy="37" r="2" fill="#3b2d35"/></g></svg>`,
-  panda: `<svg class="animal" viewBox="0 0 64 64"><g class="a-body"><circle cx="32" cy="36" r="18" fill="#ffffff"/><circle cx="19" cy="22" r="6" fill="#212121" class="a-ear-l"/><circle cx="45" cy="22" r="6" fill="#212121" class="a-ear-r"/><ellipse cx="23" cy="33" rx="5" ry="4" fill="#212121"/><ellipse cx="41" cy="33" rx="5" ry="4" fill="#212121"/><circle cx="24" cy="33" r="1.5" fill="#fff"/><circle cx="40" cy="33" r="1.5" fill="#fff"/><circle cx="32" cy="39" r="2" fill="#212121"/></g></svg>`
+  cat: `<svg class="animal" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#ffd1dc"/><polygon points="16,22 22,6 30,20" fill="#ffb3c6"/><polygon points="48,22 42,6 34,20" fill="#ffb3c6"/></svg>`,
+  bunny: `<svg class="animal" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="18" ry="16" fill="#fff"/><ellipse cx="23" cy="14" r="4" fill="#ffd1dc"/><ellipse cx="41" cy="14" r="4" fill="#ffd1dc"/></svg>`,
+  bear: `<svg class="animal" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#d7ccc8"/><circle cx="18" cy="22" r="6" fill="#bcaaa4"/><circle cx="46" cy="22" r="6" fill="#bcaaa4"/></svg>`,
+  panda: `<svg class="animal" viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#fff"/><circle cx="19" cy="22" r="6" fill="#212121"/><circle cx="45" cy="22" r="6" fill="#212121"/><circle cx="32" cy="39" r="2" fill="#212121"/></svg>`
 };
 
 const RECIPES = {
-  matchaLatte: { name: "ماتشا لاتيه بوبا", type: "drinks", cup: "🧋", req: ["milk", "matcha", "boba"] },
-  strawberryBoba: { name: "بوبا الفراولة الوردية", type: "drinks", cup: "🥤", req: ["milk", "strawberry", "boba"] },
-  chocolateDonut: { name: "دونات الشوكولاتة الكيوت", type: "bakery", cup: "🍩", req: ["cookieDough", "chocolate"] },
-  matchaCake: { name: "كيكة الماتشا والكراميل", type: "bakery", cup: "🍰", req: ["cakeBatter", "matcha", "caramel"] }
+  turkishCoffee: { name: "قهوة تركية أصيلة", type: "drinks", cup: "☕", req: ["بن", "ماء"], levelReq: 1 },
+  karakTea: { name: "كراميل كرك إماراتي", type: "drinks", cup: "🧋", req: ["شاي", "حليب", "هيل"], levelReq: 1 },
+  bobaLatte: { name: "ماتشا حبوب البوبا", type: "drinks", cup: "🧋", req: ["حليب", "ماتشا", "حبوب البوبا"], levelReq: 1 },
+  cappuccino: { name: "كابتشينو برغوة غنية", type: "drinks", cup: "☕", req: ["بن", "حليب", "رغوة"], levelReq: 1 },
+  moroccanTea: { name: "شاي مغربي بالنعناع", type: "drinks", cup: "🍵", req: ["شاي", "ماء", "نعناع"], levelReq: 1 },
+  
+  kunafa: { name: "كنافة نابلسية بالجبن", type: "bakery", cup: "🧀", req: ["عجين", "جبن", "قطر"], levelReq: 1 },
+  trilce: { name: "كيكة التريليتشا بالحليب", type: "bakery", cup: "🍰", req: ["قالب كيك", "حليب", "كراميل"], levelReq: 1 },
+  chocolateDonut: { name: "دونات الشوكولاتة الكيوت", type: "bakery", cup: "🍩", req: ["عجين", "شوكولاتة", "سكر"], levelReq: 1 },
+  strawberryCheesecake: { name: "تشيز كيك الفراولة", type: "bakery", cup: "🍰", req: ["جبن", "بسكويت", "فراولة"], levelReq: 1 },
+  baklava: { name: "بقلاوة بالفستق الحلبي", type: "bakery", cup: "🥮", req: ["عجين", "فستق", "قطر"], levelReq: 1 },
+
+  spanishLatte: { name: "سبانش لاتيه مثلج", type: "drinks", cup: "🥤", req: ["بن", "حليب مكثف", "ثلج"], levelReq: 2 },
+  matchaIceCream: { name: "آيس كريم الماتشا الفاخر", type: "bakery", cup: "🍨", req: ["حليب", "ماتشا", "كريمة"], levelReq: 2 },
+  pomegranateMojito: { name: "موهيتو الرمان المنعش", type: "drinks", cup: "🍹", req: ["صودا", "رمان", "نعناع"], levelReq: 2 },
+  saffronCake: { name: "كيكة الزعفران الملكية", type: "bakery", cup: "🧁", req: ["قالب كيك", "زعفران", "حليب مكثف"], levelReq: 3 },
+  moltenCake: { name: "مولتن كيك الشوكولاتة الساخنة", type: "bakery", cup: "🍫", req: ["شوكولاتة", "زببدة", "دقيق"], levelReq: 3 },
+  macaronBox: { name: "علبة ماكارون فرنسي ملون", type: "bakery", cup: "🍬", req: ["لوز مطحون", "سكر", "توت"], levelReq: 3 }
 };
 
 const CUSTOMERS_POOL = [
   { name: "ميمي القطة", avatar: "cat" },
   { name: "لولو الأرنب", avatar: "bunny" },
   { name: "كوكو الدب", avatar: "bear" },
-  { name: "باندا الكيوت", avatar: "panda" }
+  { name: "باندا الكيوت", avatar: "panda" },
+  { name: "سوسو الممشوقة", avatar: "cat" },
+  { name: "توتي الشقية", avatar: "bunny" }
 ];
 
 let activeOrders = [];
-let sharedCounterItems = [];
 let gameInterval = null;
 let orderSpawnerTimer = null;
 
@@ -67,12 +82,10 @@ window.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
-// رسم خيارات الشخصيات تحت جملة "اختاري شخصيتك الكيوت"
 function renderAvatarChoices() {
   const row = document.querySelector(".avatars-row");
   if (!row) return;
   row.innerHTML = "";
-
   Object.keys(ANIMALS_SVG).forEach(key => {
     const div = document.createElement("div");
     div.className = `avatar-choice ${key === STATE.playerAvatar ? "selected" : ""}`;
@@ -81,7 +94,6 @@ function renderAvatarChoices() {
       document.querySelectorAll(".avatar-choice").forEach(el => el.classList.remove("selected"));
       div.classList.add("selected");
       STATE.playerAvatar = key;
-      showToast(`تم اختيار الشخصية بنجاح! 🌸`);
     });
     row.appendChild(div);
   });
@@ -90,9 +102,9 @@ function renderAvatarChoices() {
 function setupEventListeners() {
   document.getElementById("createRoomBtn").addEventListener("click", handleCreateRoom);
   document.getElementById("joinRoomBtn").addEventListener("click", handleJoinRoom);
-  document.getElementById("soloPlayBtn").addEventListener("click", startSoloGame);
-  document.getElementById("startShiftBtn").addEventListener("click", startMultiplayerGame);
-  document.getElementById("playAgainBtn").addEventListener("click", resetToLobby);
+  document.getElementById("soloPlayBtn").addEventListener("click", startShift);
+  document.getElementById("startShiftBtn").addEventListener("click", startShift);
+  document.getElementById("playAgainBtn").addEventListener("click", () => location.reload());
   document.getElementById("copyRoomLinkBtn").addEventListener("click", copyRoomLink);
 
   document.querySelectorAll(".station-tab-btn").forEach(btn => {
@@ -103,7 +115,7 @@ function setupEventListeners() {
 
   document.querySelectorAll(".shout-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
-      triggerShout(e.currentTarget.getAttribute("data-shout"));
+      showToast(e.currentTarget.getAttribute("data-shout"));
     });
   });
 }
@@ -111,7 +123,6 @@ function setupEventListeners() {
 function handleCreateRoom() {
   const nameInput = document.getElementById("playerNameInput").value.trim();
   if (nameInput) STATE.playerName = nameInput;
-
   STATE.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
   STATE.isHost = true;
 
@@ -120,45 +131,17 @@ function handleCreateRoom() {
   document.getElementById("createRoomBtn").style.display = "none";
   document.getElementById("joinRoomInputWrap").style.display = "none";
   document.getElementById("soloPlayBtn").style.display = "none";
-
   showToast(`أنشأت كافيه برمز: ${STATE.roomCode} ✨`);
 }
 
 function handleJoinRoom() {
-  const nameInput = document.getElementById("playerNameInput").value.trim();
   const codeInput = document.getElementById("joinRoomCodeInput").value.trim().toUpperCase();
-
-  if (!codeInput || codeInput.length < 4) {
-    alert("الرجاء إدخال كود الكافيه الصحيح");
+  if (!codeInput) {
+    alert("الرجاء إدخال كود الكافيه");
     return;
   }
-
-  if (nameInput) STATE.playerName = nameInput;
   STATE.roomCode = codeInput;
-
-  document.getElementById("lobbyScreen").classList.remove("active");
-  document.getElementById("gameScreen").classList.add("active");
-  document.getElementById("gameStatsBar").style.display = "flex";
-  startGameLoop();
-  showToast(`انضممت بنجاح للكافيه! ☕🌸`);
-}
-
-function startSoloGame() {
-  const nameInput = document.getElementById("playerNameInput").value.trim();
-  if (nameInput) STATE.playerName = nameInput;
-
-  document.getElementById("lobbyScreen").classList.remove("active");
-  document.getElementById("gameScreen").classList.add("active");
-  document.getElementById("gameStatsBar").style.display = "flex";
-  startGameLoop();
-  showToast(`بدأ شفت التدريب الفردي! بالتوفيق 💖`);
-}
-
-function startMultiplayerGame() {
-  document.getElementById("lobbyScreen").classList.remove("active");
-  document.getElementById("gameScreen").classList.add("active");
-  document.getElementById("gameStatsBar").style.display = "flex";
-  startGameLoop();
+  startShift();
 }
 
 function copyRoomLink() {
@@ -166,31 +149,41 @@ function copyRoomLink() {
   navigator.clipboard.writeText(link).then(() => showToast("تم نسخ رابط الكافيه! 📋"));
 }
 
-function startGameLoop() {
-  STATE.timer = 180;
-  STATE.score = 0;
-  STATE.coins = 50;
-  activeOrders = [];
-  sharedCounterItems = [];
+function startShift() {
+  const nameInput = document.getElementById("playerNameInput").value.trim();
+  if (nameInput) STATE.playerName = nameInput;
 
-  updateStatsDisplay();
-  switchStation("drinks");
+  document.getElementById("lobbyScreen").classList.remove("active");
+  document.getElementById("gameScreen").classList.add("active");
+  document.getElementById("gameStatsBar").style.display = "flex";
+
+  startGameLoop();
+  showToast("بدأ الشفت بنجاح! 🌸");
+}
+
+function startGameLoop() {
+  activeOrders = [];
+  STATE.timer = 240;
+  STATE.score = 0;
+  STATE.coins = 100;
 
   gameInterval = setInterval(() => {
     STATE.timer--;
-    updateStatsDisplay();
-    if (STATE.timer <= 0) endGameShift();
+    updateStats();
+    updateOrdersPatience();
+    if (STATE.timer <= 0) endGame();
   }, 1000);
 
   orderSpawnerTimer = setInterval(() => {
-    if (activeOrders.length < 4) spawnCustomerOrder();
-  }, 7000);
+    if (activeOrders.length < 5) spawnCustomer();
+  }, 6000);
 
-  spawnCustomerOrder();
-  spawnCustomerOrder();
+  spawnCustomer();
+  spawnCustomer();
+  switchStation("drinks");
 }
 
-function updateStatsDisplay() {
+function updateStats() {
   document.getElementById("statScore").textContent = STATE.score;
   document.getElementById("statCoins").textContent = `${STATE.coins} 🪙`;
   document.getElementById("statLevel").textContent = `${STATE.level} ⭐`;
@@ -200,18 +193,34 @@ function updateStatsDisplay() {
   document.getElementById("statTimer").textContent = `${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
-function spawnCustomerOrder() {
-  const keys = Object.keys(RECIPES);
-  const recipeKey = keys[Math.floor(Math.random() * keys.length)];
+function spawnCustomer() {
+  const unlockedKeys = Object.keys(RECIPES).filter(k => STATE.inventory[k] || RECIPES[k].levelReq <= STATE.level);
+  const recipeKey = unlockedKeys[Math.floor(Math.random() * unlockedKeys.length)];
   const customer = CUSTOMERS_POOL[Math.floor(Math.random() * CUSTOMERS_POOL.length)];
-  const isVip = Math.random() < 0.25;
 
-  activeOrders.push({
+  const newOrder = {
     id: "ord_" + Math.random().toString(36).substring(2, 7),
     recipeKey: recipeKey,
     recipe: RECIPES[recipeKey],
     customer: customer,
-    isVip: isVip
+    patience: 60, // 60 ثانية صبر الزبون الدقيقة
+    maxPatience: 60
+  };
+
+  activeOrders.push(newOrder);
+  renderOrdersRack();
+  playBeep();
+  showToast(`وصل زبون جديد: ${customer.name}! 🛎️`);
+}
+
+function updateOrdersPatience() {
+  activeOrders.forEach((ord, index) => {
+    ord.patience--;
+    if (ord.patience <= 0) {
+      showToast(`غادر الزبون ${ord.customer.name} لبطء الطلب! 💔`);
+      activeOrders.splice(index, 1);
+      STATE.missedCount++;
+    }
   });
   renderOrdersRack();
 }
@@ -223,366 +232,246 @@ function switchStation(stationName) {
   });
 
   const hintEl = document.getElementById("stationHint");
-  const gridEl = document.getElementById("ingredientsGrid");
-  gridEl.className = "ingredients-grid";
+  const grid = document.getElementById("ingredientsGrid");
+  grid.className = "ingredients-grid";
+  grid.innerHTML = "";
 
   if (stationName === "drinks") {
-    hintEl.textContent = "اختر المكونات وشغل آلة البوبا!";
-    renderDrinksStation();
+    hintEl.textContent = "اختر المكونات لتحضير ألذ المشروبات والقهوة!";
+    renderIngredients([
+      { id: "بن", name: "بن تركي", icon: "☕" },
+      { id: "ماء", name: "ماء نقي", icon: "💧" },
+      { id: "شاي", name: "شاي أحمر", icon: "🍃" },
+      { id: "حليب", name: "حليب طازج", icon: "🥛" },
+      { id: "هيل", name: "هيل مطحون", icon: "🌿" },
+      { id: "ماتشا", name: "بودرة الماتشا", icon: "🍵" },
+      { id: "حبوب البوبا", name: "حبوب البوبا", icon: "🧋" },
+      { id: "رغوة", name: "رغوة حليب", icon: "☁️" },
+      { id: "نعناع", name: "نعناع طازج", icon: "🌱" },
+      { id: "حليب مكثف", name: "حليب مكثف", icon: "🍼" },
+      { id: "ثلج", name: "مكعبات ثلج", icon: "🧊" },
+      { id: "صودا", name: "مياه غازية صودا", icon: "🥤" },
+      { id: "رمان", name: "حبات رمان طازجة", icon: "🔴" }
+    ]);
   } else if (stationName === "bakery") {
-    hintEl.textContent = "اختر العجينة وأدخلها الفرن!";
-    renderBakeryStation();
+    hintEl.textContent = "اختر المعجنات والحلويات والصلصات للخبز!";
+    renderIngredients([
+      { id: "عجين", name: "عجين طازج", icon: "🍞" },
+      { id: "جبن", name: "جبن عكاوي", icon: "🧀" },
+      { id: "قطر", name: "قطر / شيرة", icon: "🍯" },
+      { id: "قالب كيك", name: "قالب كيك", icon: "🧁" },
+      { id: "كراميل", name: "صوص كراميل", icon: "🍮" },
+      { id: "شوكولاتة", name: "شوكولاتة سائلة", icon: "🍫" },
+      { id: "سكر", name: "سكر مطحون", icon: "✨" },
+      { id: "بسكويت", name: "بسكويت مطحون", icon: "🍪" },
+      { id: "فراولة", name: "فراولة طازجة", icon: "🍓" },
+      { id: "فستق", name: "فستق حلبي", icon: "🥜" },
+      { id: "كريمة", name: "كريمة خفق", icon: "🍦" },
+      { id: "زعفران", name: "خيوط زعفران", icon: "🌾" },
+      { id: "زببدة", name: "زببدة فاخرة", icon: "🧈" },
+      { id: "دقيق", name: "دقيق فاخر", icon: "🌾" },
+      { id: "لوز مطحون", name: "لوز مطحون", icon: "🌰" },
+      { id: "توت", name: "توت بري", icon: "🫐" }
+    ]);
   } else if (stationName === "serving") {
-    hintEl.textContent = "سلم الطلبات للزبائن من طاولة التجهيز!";
+    hintEl.textContent = "سلّم الطلبات للزبائن المنتظرين فوراً!";
     renderServingStation();
   } else if (stationName === "shop") {
-    hintEl.textContent = "طور الأجهزة والمكونات بأسعار واضحة!";
+    hintEl.textContent = "طوّر معدات الكافيه وافتح منتجات جديدة حسب مستواك!";
     renderShopStation();
   }
 }
 
-function renderDrinksStation() {
+function renderIngredients(items) {
   const grid = document.getElementById("ingredientsGrid");
-  grid.innerHTML = `
-    <div class="machines-bar">
-      <div class="machine-btn" onclick="useMachine('bobaMaker')">
-        <span class="machine-icon">🧋</span>
-        <div class="machine-text">
-          <span class="machine-name">آلة البوبا (${STATE.machines.bobaMaker.level}⭐)</span>
-          <span class="machine-action">تشغيل الآلة</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  [
-    { id: "milk", name: "حليب طازج", icon: "🥛", unlocked: STATE.inventory.milk },
-    { id: "matcha", name: "بودرة الماتشا", icon: "🍵", unlocked: STATE.inventory.matcha },
-    { id: "boba", name: "لؤلؤ البوبا", icon: "🧋", unlocked: STATE.inventory.boba },
-    { id: "strawberry", name: "صوص الفراولة", icon: "🍓", unlocked: STATE.inventory.strawberry }
-  ].forEach(item => {
-    const card = document.createElement("button");
-    card.className = `ingredient-card ${!item.unlocked ? 'locked' : ''}`;
-    card.innerHTML = `<span class="ing-icon">${item.icon}</span><span class="ing-name">${item.name}</span>${!item.unlocked ? '<span class="lock-badge">مقفل</span>' : ''}`;
-    card.addEventListener("click", () => {
-      if (item.unlocked) addIngredientToCurrent(item.id);
-      else showToast("هذا المكون مقفل، اطلبه من المتجر أولاً! 🛍️");
-    });
+  items.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "ingredient-card";
+    card.innerHTML = `<div style="font-size:26px;">${item.icon}</div><div style="font-size:11.5px;font-weight:800;margin-top:4px;">${item.name}</div>`;
+    card.addEventListener("click", () => addIngredient(item.id));
     grid.appendChild(card);
   });
-  renderWorkbenchPreview();
 }
 
-function renderBakeryStation() {
-  const grid = document.getElementById("ingredientsGrid");
-  grid.innerHTML = `
-    <div class="machines-bar">
-      <div class="machine-btn" onclick="useMachine('oven')">
-        <span class="machine-icon">🔥</span>
-        <div class="machine-text">
-          <span class="machine-name">فرن الحلويات (${STATE.machines.oven.level}⭐)</span>
-          <span class="machine-action">خبز المعجنات</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  [
-    { id: "cookieDough", name: "عجينة الكوكيز", icon: "🍪", unlocked: STATE.inventory.cookieDough },
-    { id: "cakeBatter", name: "خليط الكيك", icon: "🧁", unlocked: STATE.inventory.cakeBatter },
-    { id: "chocolate", name: "شوكولاتة ساخنة", icon: "🍫", unlocked: STATE.inventory.chocolate },
-    { id: "caramel", name: "صوص الكراميل", icon: "🍯", unlocked: STATE.inventory.caramel }
-  ].forEach(item => {
-    const card = document.createElement("button");
-    card.className = `ingredient-card ${!item.unlocked ? 'locked' : ''}`;
-    card.innerHTML = `<span class="ing-icon">${item.icon}</span><span class="ing-name">${item.name}</span>${!item.unlocked ? '<span class="lock-badge">مقفل</span>' : ''}`;
-    card.addEventListener("click", () => {
-      if (item.unlocked) addIngredientToCurrent(item.id);
-      else showToast("هذا المكون مقفل، اطلبه من المتجر أولاً! 🛍️");
-    });
-    grid.appendChild(card);
-  });
-  renderWorkbenchPreview();
-}
-
-function addIngredientToCurrent(id) {
+function addIngredient(id) {
   STATE.currentRecipe.ingredients.push(id);
-  renderWorkbenchPreview();
+  renderWorkbench();
 }
 
-function useMachine(machineKey) {
-  STATE.machines[machineKey].busy = true;
-  setTimeout(() => {
-    STATE.machines[machineKey].busy = false;
-    showToast("تم الانتهاء من تجهيز الآلة بنجاح! ✨");
-  }, 1500);
-}
-
-function renderWorkbenchPreview() {
-  const bench = document.getElementById("currentItemVisual");
+function renderWorkbench() {
+  const workbench = document.getElementById("currentItemVisual");
   const ings = STATE.currentRecipe.ingredients;
-
   if (ings.length === 0) {
-    bench.innerHTML = `<span class="item-cup-preview" style="opacity:0.4">🥛</span><span style="font-size:12.5px;color:var(--text-muted)">طاولة التحضير فارغة.. أضف المكونات!</span>`;
+    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. أضف المكونات!</span>`;
     return;
   }
-
-  bench.innerHTML = `
-    <span class="item-cup-preview">✨</span>
-    <div class="item-ingredients-tags">${ings.map(i => `<span class="ingredient-badge">${i}</span>`).join("")}</div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button class="btn-primary" style="padding:6px 14px;font-size:12px;" onclick="finishCurrentDish()">وضع على الطاولة 🛎️</button>
-      <button class="btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="clearWorkbench()">إعادة 🗑️</button>
+  workbench.innerHTML = `
+    <div style="font-weight:900; color:var(--pink-main); margin-bottom:4px;">المكونات الحالية: ${ings.join(" + ")}</div>
+    <div style="margin-top:8px; display:flex; gap:8px; justify-content:center;">
+      <button class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="finishDish()">تحضير الطلب 🛎️</button>
+      <button class="btn-primary" style="padding:6px 14px; font-size:12px; background:#ff4757;" onclick="clearWorkbench()">مسح 🗑️</button>
     </div>
   `;
 }
 
 function clearWorkbench() {
   STATE.currentRecipe.ingredients = [];
-  renderWorkbenchPreview();
+  renderWorkbench();
 }
 
-function finishCurrentDish() {
-  const currentIngs = [...STATE.currentRecipe.ingredients].sort();
+function finishDish() {
+  const current = [...STATE.currentRecipe.ingredients].sort();
   let matchedKey = null;
 
   for (let [k, r] of Object.entries(RECIPES)) {
-    if (JSON.stringify(currentIngs) === JSON.stringify([...r.req].sort())) {
+    if (JSON.stringify(current) === JSON.stringify([...r.req].sort())) {
       matchedKey = k;
       break;
     }
   }
 
   if (!matchedKey) {
-    showToast("هذه الوصفة غير مطابقة لأي طلب حالي! ❌");
+    showToast("هذه الوصفة غير صحيحة! ❌");
+    clearWorkbench();
     return;
   }
 
-  sharedCounterItems.push({ recipeKey: matchedKey, recipe: RECIPES[matchedKey], maker: STATE.playerName });
+  const orderIdx = activeOrders.findIndex(o => o.recipeKey === matchedKey);
+  if (orderIdx !== -1) {
+    activeOrders.splice(orderIdx, 1);
+    STATE.score += 120;
+    STATE.coins += 25;
+    STATE.servedCount++;
+
+    if (STATE.servedCount % 4 === 0) {
+      STATE.level++;
+      showToast(`مبارك! لقد صعدت للمستوى ${STATE.level} ⭐`);
+    }
+
+    updateStats();
+    showToast("تم تسليم الطلب بنجاح! +120 نقطة ⭐");
+  } else {
+    showToast("لا يوجد زبون يطلب هذا الصنف حالياً!");
+  }
   clearWorkbench();
-  renderSharedCounter();
-  showToast("تم وضع الطبق على طاولة التجهيز! 🛎️");
-  switchStation("serving");
-}
-
-function renderSharedCounter() {
-  const container = document.getElementById("sharedItemsContainer");
-  if (!container) return;
-
-  if (sharedCounterItems.length === 0) {
-    container.innerHTML = `<span class="shared-empty-hint">طاولة التجهيز فارغة حالياً.. اطبخوا وشاركوا الأطباق هنا! 🍰</span>`;
-    return;
-  }
-
-  container.innerHTML = "";
-  sharedCounterItems.forEach((item, index) => {
-    const card = document.createElement("div");
-    card.className = "shared-item-card";
-    card.innerHTML = `
-      <div class="shared-item-name"><span>${item.recipe.cup}</span> ${item.recipe.name}</div>
-      <div class="shared-item-maker">بواسطة: ${item.maker}</div>
-      <div class="shared-item-actions">
-        <button class="quick-serve-btn" onclick="serveSharedItem(${index})">تسليم 🛎️</button>
-        <button class="trash-item-btn" onclick="removeSharedItem(${index})">🗑️</button>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+  renderOrdersRack();
 }
 
 function renderServingStation() {
   const grid = document.getElementById("ingredientsGrid");
-  grid.className = "ingredients-grid";
-  grid.innerHTML = "";
-
-  if (activeOrders.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted)">لا توجد طلبات زبائن معلقة حالياً.. انتظر قليلاً! 🌸</div>`;
-    return;
-  }
-
-  activeOrders.forEach((ord) => {
-    const card = document.createElement("div");
-    card.className = "serve-card";
-    card.innerHTML = `
-      <div class="serve-card-icon">${ord.recipe.cup}</div>
-      <div class="serve-card-name">${ord.recipe.name}</div>
-      <div style="font-size:11px;color:var(--pink-main);font-weight:700;">الزبون: ${ord.customer.name}</div>
-      <button class="serve-direct-btn" onclick="fulfillOrder('${ord.id}')">تقديم مباشر ✨</button>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function serveSharedItem(index) {
-  const item = sharedCounterItems[index];
-  const orderIdx = activeOrders.findIndex(o => o.recipeKey === item.recipeKey);
-
-  if (orderIdx !== -1) {
-    completeOrder(orderIdx);
-    sharedCounterItems.splice(index, 1);
-    renderSharedCounter();
-    renderServingStation();
-  } else {
-    showToast("لا يوجد زبون يطلب هذا الصنف حالياً! ❌");
-  }
-}
-
-function removeSharedItem(index) {
-  sharedCounterItems.splice(index, 1);
-  renderSharedCounter();
-}
-
-function fulfillOrder(orderId) {
-  const orderIdx = activeOrders.findIndex(o => o.id === orderId);
-  if (orderIdx !== -1) {
-    completeOrder(orderIdx);
-    renderServingStation();
-  }
-}
-
-function completeOrder(orderIdx) {
-  const order = activeOrders[orderIdx];
-  activeOrders.splice(orderIdx, 1);
-
-  STATE.score += order.isVip ? 250 : 100;
-  STATE.coins += order.isVip ? 35 : 15;
-  STATE.servedCount++;
-
-  updateStatsDisplay();
-  renderOrdersRack();
-  showToast(`أتممت الطلب بنجاح! +${order.isVip ? 250 : 100} نقطة ⭐`);
-}
-
-function renderOrdersRack() {
-  const rack = document.getElementById("ordersRack");
-  if (!rack) return;
-
-  if (activeOrders.length === 0) {
-    rack.innerHTML = `<div style="font-size:13px;color:var(--text-muted);padding:10px;">جميع الطلبات مسلمة! الكافيه هادئ وجميل 🌸</div>`;
-    return;
-  }
-
-  rack.innerHTML = "";
-  activeOrders.forEach(ord => {
-    const card = document.createElement("div");
-    card.className = `order-card ${ord.isVip ? 'vip' : ''}`;
-    card.innerHTML = `
-      <div class="order-customer">
-        <div class="order-avatar">${ANIMALS_SVG[ord.customer.avatar]}</div>
-        <div class="order-name">${ord.customer.name}</div>
-        ${ord.isVip ? '<span class="vip-badge">VIP 👑</span>' : ''}
-      </div>
-      <div class="patience-bar-bg"><div class="patience-bar-fill" style="width: 100%;"></div></div>
-      <div class="order-recipe">
-        <div class="recipe-title">${ord.recipe.name}</div>
-        <div class="recipe-tags">${ord.recipe.req.map(r => `<span class="recipe-tag">${r}</span>`).join("")}</div>
-      </div>
-      <button class="order-serve-btn" onclick="fulfillOrder('${ord.id}')">جاهز للتسليم 🛎️</button>
-    `;
-    rack.appendChild(card);
-  });
+  grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; font-weight:800; color:var(--pink-main); padding:20px;">انظر إلى تذاكر الزبائن بالأعلى وقم بتجهيز وتقديم طلباتهم من محطات المشروبات والحلويات! ✨</div>`;
 }
 
 function renderShopStation() {
   const grid = document.getElementById("ingredientsGrid");
   grid.className = "ingredients-grid shop-mode";
   grid.innerHTML = `
-    <div style="font-size: 14px; font-weight: 900; color: var(--pink-main); margin-bottom: 6px;">
-      🛍️ متجر كافيه بوكي (أرباحك الحالية: <span style="color:#d63031;">${STATE.coins} 🪙</span>)
+    <div style="grid-column:1/-1; font-size:14px; font-weight:900; color:var(--pink-main); margin-bottom:8px;">
+      🛍️ متجر الكافيه (أرباحك: <span style="color:#d63031;">${STATE.coins} 🪙</span> | مستواك: ${STATE.level} ⭐)
     </div>
   `;
 
-  [
-    { id: "oven", title: "تطوير الفرن السريع", desc: "يضاعف سرعة خبز المعجنات والحلويات الكيوت.", cost: STATE.machines.oven.cost, level: STATE.machines.oven.level, max: STATE.machines.oven.maxLevel, type: "machine", icon: "🔥" },
-    { id: "bobaMaker", title: "تطوير آلة البوبا", desc: "يزيد سرعة تحضير مشروبات الماتشا والبوبا.", cost: STATE.machines.bobaMaker.cost, level: STATE.machines.bobaMaker.level, max: STATE.machines.bobaMaker.maxLevel, type: "machine", icon: "🧋" },
-    { id: "strawberry", title: "فتح مكون الفراولة وتوت العليق", desc: "يسمح لكِ بتحضير مشروبات وردية جديدة للزبائن.", cost: 45, unlocked: STATE.inventory.strawberry, type: "ingredient", icon: "🍓" },
-    { id: "chocolate", title: "فتح صوص الشوكولاتة الغنية", desc: "يفتح لكِ إمكانية إعداد دونات وصواني شوكولاتة فاخرة.", cost: 55, unlocked: STATE.inventory.chocolate, type: "ingredient", icon: "🍫" }
-  ].forEach(item => {
-    const isMax = item.level && item.level >= item.max;
-    const isDone = item.unlocked || isMax;
-    const canAfford = STATE.coins >= item.cost;
+  const shopItems = [
+    { id: "spanishLatte", name: "فتح وصفة سبانش لاتيه المثلج", cost: 60, reqLevel: 2, icon: "🥤" },
+    { id: "matchaIceCream", name: "فتح وصفة آيس كريم الماتشا", cost: 75, reqLevel: 2, icon: "🍨" },
+    { id: "pomegranateMojito", name: "فتح موهيتو الرمان المنعش", cost: 90, reqLevel: 2, icon: "🍹" },
+    { id: "saffronCake", name: "فتح كيكة الزعفران الملكية", cost: 120, reqLevel: 3, icon: "🧁" },
+    { id: "moltenCake", name: "فتح مولتن كيك الشوكولاتة", cost: 140, reqLevel: 3, icon: "🍫" },
+    { id: "macaronBox", name: "فتح علبة ماكارون فرنسي", cost: 160, reqLevel: 3, icon: "🍬" }
+  ];
+
+  shopItems.forEach(item => {
+    const isUnlocked = STATE.inventory[item.id];
+    const canBuy = STATE.coins >= item.cost && STATE.level >= item.reqLevel;
 
     const card = document.createElement("div");
     card.className = "shop-card";
     card.innerHTML = `
       <div class="shop-card-icon">${item.icon}</div>
       <div class="shop-card-info">
-        <div class="shop-card-name">
-          ${item.title}
-          ${item.level ? `<span class="pips">${Array.from({length: item.max}, (_, i) => `<span class="pip ${i < item.level ? 'on' : ''}"></span>`).join("")}</span>` : ''}
-        </div>
-        <div class="shop-card-desc">${item.desc}</div>
-        <div class="shop-card-note">${isDone ? '✨ تم تفعيله واقتناؤه بالكامل' : `السعر المطلوب: ${item.cost} 🪙`}</div>
+        <div class="shop-card-name">${item.name}</div>
+        <div class="shop-card-desc">يتطلب المستوى ${item.reqLevel} ⭐</div>
+        <div class="shop-card-note">${isUnlocked ? '✓ تم اقتناؤه' : `السعر: ${item.cost} 🪙`}</div>
       </div>
-      <button class="shop-buy-btn ${isDone ? 'done' : (!canAfford ? 'poor' : '')}" onclick="buyShopItem('${item.id}', ${item.cost}, '${item.type}')">
-        ${isDone ? 'مكتمل ✓' : `${item.cost} 🪙 شراء`}
+      <button class="shop-buy-btn ${isUnlocked ? 'done' : (!canBuy ? 'poor' : '')}" onclick="buyShopItem('${item.id}', ${item.cost}, ${item.reqLevel})">
+        ${isUnlocked ? 'مكتمل' : `${item.cost} 🪙 شراء`}
       </button>
     `;
     grid.appendChild(card);
   });
 }
 
-function buyShopItem(id, cost, type) {
+function buyShopItem(id, cost, reqLevel) {
+  if (STATE.level < reqLevel) {
+    showToast(`تحتاج للوصول إلى المستوى ${reqLevel} لفتح هذا العنصر! 🔒`);
+    return;
+  }
   if (STATE.coins < cost) {
-    showToast("عذراً، أرباحك الحالية لا تكفي لشراء هذا التطوير! 🪙");
+    showToast("عذراً، أرباحك لا تكفي لشراء هذا المنتج! 🪙");
+    return;
+  }
+  if (!STATE.inventory[id]) {
+    STATE.coins -= cost;
+    STATE.inventory[id] = true;
+    updateStats();
+    showToast("تم شراء وفتح المنتج الجديد بنجاح في المنيو! 🎉");
+    renderShopStation();
+  }
+}
+
+function renderOrdersRack() {
+  const rack = document.getElementById("ordersRack");
+  if (!rack) return;
+  if (activeOrders.length === 0) {
+    rack.innerHTML = `<div style="font-size:12px; color:var(--text-muted); padding:10px;">لا توجد طلبات معلقة.. الكافيه هادئ ومرتب 🌸</div>`;
     return;
   }
 
-  if (type === "machine") {
-    if (STATE.machines[id].level < STATE.machines[id].maxLevel) {
-      STATE.coins -= cost;
-      STATE.machines[id].level++;
-      STATE.machines[id].cost += 30;
-      showToast(`تم ترقية الآلة بنجاح! 🚀`);
-    } else {
-      showToast("هذه الآلة وصلت للفل الأقصى! ⭐");
-    }
-  } else if (type === "ingredient") {
-    if (!STATE.inventory[id]) {
-      STATE.coins -= cost;
-      STATE.inventory[id] = true;
-      showToast(`تم فتح المكون الجديد بنجاح في المطبخ! 🌸`);
-    }
-  }
-
-  updateStatsDisplay();
-  renderShopStation();
+  rack.innerHTML = "";
+  activeOrders.forEach(ord => {
+    const pct = (ord.patience / ord.maxPatience) * 100;
+    const card = document.createElement("div");
+    card.className = "order-card";
+    card.innerHTML = `
+      <div style="font-size:12px; font-weight:900;">${ord.customer.name}</div>
+      <div style="font-size:13px; color:var(--pink-main); font-weight:900;">${ord.recipe.cup} ${ord.recipe.name}</div>
+      <div class="patience-bar-bg"><div class="patience-bar-fill" style="width: ${pct}%;"></div></div>
+      <div style="font-size:10px; color:var(--text-muted);">${ord.patience} ثانية متبقية</div>
+    `;
+    rack.appendChild(card);
+  });
 }
 
-function endGameShift() {
+function endGame() {
   clearInterval(gameInterval);
   clearInterval(orderSpawnerTimer);
-
   document.getElementById("gameScreen").classList.remove("active");
-  document.getElementById("gameStatsBar").style.display = "none";
   document.getElementById("resultsScreen").classList.add("active");
-
   document.getElementById("resultScore").textContent = STATE.score;
   document.getElementById("resultCoins").textContent = `${STATE.coins} 🪙`;
   document.getElementById("resultServed").textContent = STATE.servedCount;
   document.getElementById("resultMissed").textContent = STATE.missedCount;
-  document.getElementById("resultLevel").textContent = STATE.level;
-}
-
-function resetToLobby() {
-  document.getElementById("resultsScreen").classList.remove("active");
-  document.getElementById("lobbyScreen").classList.add("active");
-  document.getElementById("roomWaitingBox").style.display = "none";
-  document.getElementById("createRoomBtn").style.display = "inline-flex";
-  document.getElementById("joinRoomInputWrap").style.display = "flex";
-  document.getElementById("soloPlayBtn").style.display = "inline-block";
-}
-
-function triggerShout(text) {
-  const toast = document.getElementById("toastShout");
-  toast.innerHTML = `<span>💬</span> <span>${STATE.playerName}: ${text}</span>`;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
 function showToast(msg) {
-  const toast = document.getElementById("toastShout");
-  toast.innerHTML = `<span>✨</span> <span>${msg}</span>`;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+  const t = document.getElementById("toastShout");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 580;
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {}
 }
