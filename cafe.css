@@ -73,7 +73,9 @@ body { background: radial-gradient(circle at top, #fff0f5 0%, #fff7fa 50%, #ffea
 .copy-link-btn { background: #25d366; color: #ffffff; border: none; border-radius: 20px; padding: 8px 16px; font-size: 13.5px; font-weight: 800; cursor: pointer; margin-bottom: 16px; }
 
 .orders-ticket-rack { display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px 14px 2px; margin-bottom: 12px; }
-.order-card { min-width: 220px; max-width: 240px; background: #ffffff; border: 2px solid var(--pink-subtle); border-radius: var(--radius-md); padding: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 6px; }
+.order-card { min-width: 230px; max-width: 250px; background: #ffffff; border: 2px solid var(--pink-subtle); border-radius: var(--radius-md); padding: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 6px; }
+.order-card-header { display: flex; align-items: center; gap: 8px; }
+.order-customer-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--pink-light); display: flex; align-items: center; justify-content: center; padding: 2px; flex-shrink: 0; }
 .patience-bar-bg { width: 100%; height: 6px; background: #eee; border-radius: 10px; overflow: hidden; }
 .patience-bar-fill { height: 100%; background: #2ed573; width: 100%; border-radius: 10px; transition: width 1s linear; }
 
@@ -88,11 +90,18 @@ body { background: radial-gradient(circle at top, #fff0f5 0%, #fff7fa 50%, #ffea
 
 .crafting-workbench { background: #ffffff; border: 2px dashed var(--pink-light); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100px; margin-bottom: 12px; text-align: center; }
 
+.shared-counter-box { background: #fff0f5; border: 1.5px solid var(--pink-light); border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px; }
+.shared-counter-title { font-size: 12.5px; font-weight: 900; color: var(--pink-main); margin-bottom: 8px; }
+.shared-items-slots { display: flex; gap: 8px; overflow-x: auto; min-height: 44px; align-items: center; }
+.ready-dish-badge { background: #ffffff; border: 2px solid var(--pink-main); border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,117,151,0.2); white-space: nowrap; }
+.ready-dish-badge:hover { background: #fff5f8; transform: scale(1.03); }
+
 .ingredients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 10px; margin-bottom: 10px; }
 .ingredients-grid.shop-mode { grid-template-columns: 1fr; gap: 12px; }
 
 .ingredient-card { background: #ffffff; border: 1.5px solid var(--pink-subtle); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .ingredient-card:hover { transform: translateY(-3px); border-color: var(--pink-main); }
+.ingredient-card.base-item { border-color: var(--pink-main); background: #fff5f8; }
 
 .shop-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 1.5px solid var(--pink-subtle); border-radius: 16px; padding: 14px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); }
 .shop-card-icon { font-size: 32px; flex-shrink: 0; background: var(--bg-primary); width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 14px; }
