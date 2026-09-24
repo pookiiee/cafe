@@ -96,13 +96,13 @@ body { background: radial-gradient(circle at top, #fff0f5 0%, #fff7fa 50%, #ffea
 .ready-dish-badge { background: #ffffff; border: 2px solid var(--pink-main); border-radius: 12px; padding: 6px 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,117,151,0.2); white-space: nowrap; }
 .ready-dish-badge:hover { background: #fff5f8; transform: scale(1.03); }
 
-/* شبكة المكونات بتصميم مشابه للصورة تماماً (أبيض، إطار زهري لطيف، وأيقونة القفل للعناصر المقفلة) */
 .ingredients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 10px; }
 .ingredients-grid.shop-mode { grid-template-columns: 1fr; gap: 12px; }
 
 .ingredient-card { background: #ffffff; border: 2px solid #ffe3ec; border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(255, 117, 151, 0.04); position: relative; transition: all 0.2s ease; }
 .ingredient-card:hover { transform: translateY(-3px); border-color: var(--pink-main); box-shadow: 0 6px 16px rgba(255, 117, 151, 0.12); }
-.ingredient-card.base-item { border-color: var(--pink-main); background: #fff8fa; }
+.ingredient-card.base-item { border-color: #ffd1dc; background: #fffafa; }
+.ingredient-card.selected-active { border-color: var(--pink-main) !important; background: #fff0f5 !important; box-shadow: 0 0 0 3px rgba(255,117,151,0.3); }
 .ingredient-card.locked { opacity: 0.75; background: #fafafa; }
 .ingredient-icon-wrap { font-size: 32px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
 .ingredient-name { font-size: 12.5px; font-weight: 900; color: var(--text-dark); }
@@ -118,7 +118,6 @@ body { background: radial-gradient(circle at top, #fff0f5 0%, #fff7fa 50%, #ffea
 .shop-buy-btn.poor { background: #d9c7cf; cursor: not-allowed; }
 .shop-buy-btn.done { background: #2ed573; cursor: default; }
 
-/* شريط الصرخات في الأسفل كما طلبتِ تماماً */
 .quick-shouts-bar { display: flex; gap: 6px; overflow-x: auto; padding: 8px 4px; margin-top: auto; background: rgba(255,255,255,0.7); border-radius: var(--radius-md); border: 1.5px solid var(--pink-subtle); align-items: center; }
 .shout-btn { background: #ffffff; border: 1.5px solid var(--pink-subtle); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 800; color: var(--pink-main); white-space: nowrap; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.15s; }
 .shout-btn:hover { background: var(--pink-subtle); transform: translateY(-2px); }
