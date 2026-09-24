@@ -1,6 +1,6 @@
 /* =========================================================================
    كافيه بوكي البنات | Pookie Cozy Cafe Rush
-   Complete Logic: Clear SVG Avatars + Visual Icons for Menu & Ingredients
+   Complete Logic with Exact visual style matching reference images
    ========================================================================= */
 
 const STATE = {
@@ -46,58 +46,21 @@ const ANIMALS_SVG = {
 };
 
 const RECIPES = {
-  turkishCoffee: { name: "قهوة تركية", type: "drinks", cup: "☕", base: "كوب زجاجي", req: ["بن", "ماء"], levelReq: 1 },
-  karakTea: { name: "كراميل كرك", type: "drinks", cup: "🧋", base: "كوب زجاجي", req: ["شاي", "حليب", "هيل"], levelReq: 1 },
-  bobaLatte: { name: "ماتشا بوبا", type: "drinks", cup: "🧋", base: "كوب زجاجي", req: ["حليب", "ماتشا", "حبوب البوبا"], levelReq: 1 },
-  cappuccino: { name: "كابتشينو برغوة", type: "drinks", cup: "☕", base: "كوب زجاجي", req: ["بن", "حليب", "رغوة"], levelReq: 1 },
-  moroccanTea: { name: "شاي مغربي", type: "drinks", cup: "🍵", base: "كوب زجاجي", req: ["شاي", "ماء", "نعناع"], levelReq: 1 },
+  turkishCoffee: { name: "قهوة تركية", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "ماء نقي"], levelReq: 1 },
+  karakTea: { name: "كراميل كرك", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["شاي", "حليب نقـي", "هيل"], levelReq: 1 },
+  bobaLatte: { name: "ماتشا بوبا", type: "drinks", cup: "🧋", base: "كوب فارغ", req: ["حليب نقـي", "ماتشا", "بوبا تابيوكا"], levelReq: 1 },
+  cappuccino: { name: "كابتشينو برغوة", type: "drinks", cup: "☕", base: "كوب فارغ", req: ["قهوة", "حليب نقـي", "كريمة خفق"], levelReq: 1 },
+  moroccanTea: { name: "شاي مغربي", type: "drinks", cup: "🍵", base: "كوب فارغ", req: ["شاي", "ماء نقي", "نعناع"], levelReq: 1 },
   
-  kunafa: { name: "كنافة بالجبن", type: "bakery", cup: "🧀", base: "خبز العجين", req: ["عجين", "جبن", "قطر"], levelReq: 1 },
-  trilce: { name: "تريليتشا بالحليب", type: "bakery", cup: "🍰", base: "قالب كيك", req: ["قالب كيك", "حليب", "كراميل"], levelReq: 1 },
-  chocolateDonut: { name: "دونات شوكولاتة", type: "bakery", cup: "🍩", base: "خبز العجين", req: ["عجين", "شوكولاتة", "سكر"], levelReq: 1 },
-  strawberryCheesecake: { name: "تشيز كيك فراولة", type: "bakery", cup: "🍰", base: "قالب كيك", req: ["جبن", "بسكويت", "فراولة"], levelReq: 1 },
-  baklava: { name: "بقلاوة بالفستق", type: "bakery", cup: "🥮", base: "خبز العجين", req: ["عجين", "فستق", "قطر"], levelReq: 1 },
+  kunafa: { name: "كنافة بالجبن", type: "bakery", cup: "🧀", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "جبن عكاوي", "عسل صافي"], levelReq: 1 },
+  trilce: { name: "تريليتشا بالحليب", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "حليب نقـي", "صوص كراميل"], levelReq: 1 },
+  chocolateDonut: { name: "دونات شوكولاتة", type: "bakery", cup: "🍩", base: "عجينة دونات", req: ["عجينة دونات", "شوكولاتة", "سكر مطحون"], levelReq: 1 },
+  strawberryCheesecake: { name: "تشيز كيك فراولة", type: "bakery", cup: "🍰", base: "طبقات كيك", req: ["طبقات كيك", "بسكويت", "فراولة"], levelReq: 1 },
+  baklava: { name: "بقلاوة بالفستق", type: "bakery", cup: "🥮", base: "مخبوز بالفرن", req: ["مخبوز بالفرن", "فستق", "عسل صافي"], levelReq: 1 },
 
-  spanishLatte: { name: "سبانش لاتيه", type: "drinks", cup: "🥤", base: "كوب زجاجي", req: ["بن", "حليب مكثف", "ثلج"], levelReq: 2 },
-  matchaIceCream: { name: "آيس كريم ماتشا", type: "bakery", cup: "🍨", base: "قالب كيك", req: ["حليب", "ماتشا", "كريمة"], levelReq: 2 },
-  pomegranateMojito: { name: "موهيتو رمان", type: "drinks", cup: "🍹", base: "كوب زجاجي", req: ["صودا", "رمان", "نعناع"], levelReq: 2 },
-  saffronCake: { name: "كيكة الزعفران", type: "bakery", cup: "🧁", base: "قالب كيك", req: ["قالب كيك", "زعفران", "حليب مكثف"], levelReq: 3 },
-  moltenCake: { name: "مولتن كيك", type: "bakery", cup: "🍫", base: "خبز العجين", req: ["شوكولاتة", "زببدة", "دقيق"], levelReq: 3 },
-  macaronBox: { name: "علبة ماكارون", type: "bakery", cup: "🍬", base: "قالب كيك", req: ["لوز مطحون", "سكر", "توت"], levelReq: 3 }
-};
-
-const INGREDIENTS_ICONS = {
-  "كوب زجاجي": "🥛",
-  "خبز العجين": "🍞",
-  "قالب كيك": "🧁",
-  "بن": "☕",
-  "ماء": "💧",
-  "شاي": "🍃",
-  "حليب": "🥛",
-  "هيل": "🌿",
-  "ماتشا": "🍵",
-  "حبوب البوبا": "🧋",
-  "رغوة": "☁️",
-  "نعناع": "🌱",
-  "حليب مكثف": "🍼",
-  "ثلج": "🧊",
-  "صودا": "🥤",
-  "رمان": "🔴",
-  "عجين": "🍞",
-  "جبن": "🧀",
-  "قطر": "🍯",
-  "كراميل": "🍮",
-  "شوكولاتة": "🍫",
-  "سكر": "✨",
-  "بسكويت": "🍪",
-  "فراولة": "🍓",
-  "فستق": "🥜",
-  "كريمة": "🍦",
-  "زعفران": "🌾",
-  "زببدة": "🧈",
-  "دقيق": "🌾",
-  "لوز مطحون": "🌰",
-  "توت": "🫐"
+  spanishLatte: { name: "سبانش لاتيه", type: "drinks", cup: "🥤", base: "كوب فارغ", req: ["قهوة", "حليب مكثف", "ثلج"], levelReq: 2 },
+  matchaIceCream: { name: "آيس كريم ماتشا", type: "bakery", cup: "🍨", base: "كرة آيس كريم", req: ["حليب نقـي", "ماتشا", "كريمة خفق"], levelReq: 2 },
+  pomegranateMojito: { name: "موهيتو رمان", type: "drinks", cup: "🍹", base: "شاي مثلج", req: ["صودا فوارة", "رمان", "نعناعقة"], levelReq: 2 }
 };
 
 const CUSTOMERS_POOL = [
@@ -275,43 +238,40 @@ function switchStation(stationName) {
   grid.innerHTML = "";
 
   if (stationName === "drinks") {
-    hintEl.textContent = "اختر الكوب أولاً 🥛 ثم أضف المكونات بالإيقونات!";
+    hintEl.textContent = "اختر الكوب أو المشروب الأول..";
     renderIngredients([
-      { id: "كوب زجاجي", name: "كوب زجاجي", icon: "🥛", isBase: true },
-      { id: "بن", name: "بن تركي", icon: "☕" },
-      { id: "ماء", name: "ماء نقي", icon: "💧" },
-      { id: "شاي", name: "شاي أحمر", icon: "🍃" },
-      { id: "حليب", name: "حليب طازج", icon: "🥛" },
-      { id: "هيل", name: "هيل مطحون", icon: "🌿" },
-      { id: "ماتشا", name: "بودرة الماتشا", icon: "🍵" },
-      { id: "حبوب البوبا", name: "حبوب البوبا", icon: "🧋" },
-      { id: "رغوة", name: "رغوة حليب", icon: "☁️" },
-      { id: "نعناع", name: "نعناع طازج", icon: "🌱" },
-      { id: "حليب مكثف", name: "حليب مكثف", icon: "🍼" },
-      { id: "ثلج", name: "مكعبات ثلج", icon: "🧊" },
-      { id: "صودا", name: "مياه غازية صودا", icon: "🥤" },
-      { id: "رمان", name: "حبات رمان طازجة", icon: "🔴" }
+      { id: "كوب فارغ", name: "كوب فارغ", icon: "🥛", isBase: true, unlocked: true },
+      { id: "ثلج", name: "ثلج", icon: "🧊", unlocked: true },
+      { id: "ماتشا", name: "ماتشا", icon: "🍵", unlocked: true },
+      { id: "فراولة", name: "فراولة", icon: "🍓", unlocked: true },
+      { id: "حليب نقـي", name: "حليب نقـي", icon: "🥛", unlocked: true },
+      { id: "بوبا تابيوكا", name: "بوبا تابيوكا", icon: "🧋", unlocked: true },
+      { id: "كريمة خفق", name: "كريمة خفق", icon: "🍦", unlocked: true },
+      { id: "قهوة", name: "قهوة", icon: "☕", unlocked: true },
+      { id: "صوص كراميل", name: "صوص كراميل", icon: "🍮", unlocked: false, level: 2 },
+      { id: "شاي مثلج", name: "شاي مثلج", icon: "🧊", unlocked: false, level: 2 },
+      { id: "خوخ", name: "خوخ", icon: "🍑", unlocked: false, level: 2 },
+      { id: "شوكولاتة", name: "شوكولاتة", icon: "🍫", unlocked: false, level: 2 },
+      { id: "مارشميلو", name: "مارشميلو", icon: "☁️", unlocked: false, level: 2 },
+      { id: "ليمون", name: "ليمون", icon: "🍋", unlocked: false, level: 2 },
+      { id: "نعناع", name: "نعناع", icon: "🌿", unlocked: false, level: 2 },
+      { id: "صودا فوارة", name: "صودا فوارة", icon: "🥤", unlocked: false, level: 2 }
     ]);
   } else if (stationName === "bakery") {
-    hintEl.textContent = "اختر العجين أو القالب أولاً 🍞 ثم أضف المكونات بالإيقونات!";
+    hintEl.textContent = "اختر العجين أو القالب واصنع الحلويات!";
     renderIngredients([
-      { id: "خبز العجين", name: "خبز/عجين", icon: "🍞", isBase: true },
-      { id: "قالب كيك", name: "قالب كيك", icon: "🧁", isBase: true },
-      { id: "عجين", name: "عجين إضافي", icon: "🍞" },
-      { id: "جبن", name: "جبن عكاوي", icon: "🧀" },
-      { id: "قطر", name: "قطر / شيرة", icon: "🍯" },
-      { id: "كراميل", name: "صوص كراميل", icon: "🍮" },
-      { id: "شوكولاتة", name: "شوكولاتة", icon: "🍫" },
-      { id: "سكر", name: "سكر مطحون", icon: "✨" },
-      { id: "بسكويت", name: "بسكويت", icon: "🍪" },
-      { id: "فراولة", name: "فراولة", icon: "🍓" },
-      { id: "فستق", name: "فستق حلبي", icon: "🥜" },
-      { id: "كريمة", name: "كريمة خفق", icon: "🍦" },
-      { id: "زعفران", name: "زعفران", icon: "🌾" },
-      { id: "زببدة", name: "زببدة فاخرة", icon: "🧈" },
-      { id: "دقيق", name: "دقيق فاخر", icon: "🌾" },
-      { id: "لوز مطحون", name: "لوز مطحون", icon: "🌰" },
-      { id: "توت", name: "توت بري", icon: "🫐" }
+      { id: "عجينة دونات", name: "عجينة دونات", icon: "🍩", isBase: true, unlocked: true },
+      { id: "مخبوز بالفرن", name: "مخبوز بالفرن", icon: "🔥", isBase: true, unlocked: true },
+      { id: "تغطية وردية", name: "تغطية وردية", icon: "🌸", unlocked: true },
+      { id: "سبرنكلز ملون", name: "سبرنكلز ملون", icon: "✨", unlocked: true },
+      { id: "طبقات كيك", name: "طبقات كيك", icon: "🍰", isBase: true, unlocked: true },
+      { id: "خليط بانكيك", name: "خليط بانكيك", icon: "🥞", unlocked: true },
+      { id: "مكعب زبدة", name: "مكعب زبدة", icon: "🧈", unlocked: true },
+      { id: "عسل صافي", name: "عسل صافي", icon: "🍯", unlocked: true },
+      { id: "عجينة كوكيز", name: "عجينة كوكيز", icon: "🍪", unlocked: false, level: 2 },
+      { id: "قطع شوكولاتة", name: "قطع شوكولاتة", icon: "🍫", unlocked: false, level: 2 },
+      { id: "عجينة وافل", name: "عجينة وافل", icon: "🧇", unlocked: false, level: 2 },
+      { id: "كرة آيس كريم", name: "كرة آيس كريم", icon: "🍦", isBase: true, unlocked: false, level: 2 }
     ]);
   } else if (stationName === "serving") {
     hintEl.textContent = "اضغط على أي طبق جاهز على الطاولة لتقديمه للزبون المطلوب!";
@@ -326,9 +286,21 @@ function renderIngredients(items) {
   const grid = document.getElementById("ingredientsGrid");
   items.forEach(item => {
     const card = document.createElement("div");
-    card.className = `ingredient-card ${item.isBase ? 'base-item' : ''}`;
-    card.innerHTML = `<div style="font-size:28px;">${item.icon}</div><div style="font-size:11px;font-weight:800;margin-top:4px;">${item.name}</div>`;
+    card.className = `ingredient-card ${item.isBase ? 'base-item' : ''} ${!item.unlocked ? 'locked' : ''}`;
+    
+    let lockHtml = !item.unlocked ? `<div class="ingredient-lock-status">🔒 مقفل</div>` : '';
+    
+    card.innerHTML = `
+      <div class="ingredient-icon-wrap">${item.icon}</div>
+      <div class="ingredient-name">${item.name}</div>
+      ${lockHtml}
+    `;
+
     card.addEventListener("click", () => {
+      if (!item.unlocked) {
+        showToast(`هذا العنصر مقفل! يتطلب الوصول للمستوى ${item.level} ⭐`);
+        return;
+      }
       if (item.isBase) {
         STATE.selectedBase = item.id;
         showToast(`تم اختيار القاعدة: ${item.icon} ${item.name} 🥣`);
@@ -351,20 +323,19 @@ function renderWorkbench() {
   const ings = STATE.currentIngredients;
 
   if (!base && ings.length === 0) {
-    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. اختر الكوب أو القاعدة أولاً!</span>`;
+    workbench.innerHTML = `<span style="font-size:13px; color:var(--text-muted);">طاولة التحضير فارغة.. اختر القواعد والمكونات!</span>`;
     return;
   }
 
-  const baseIcon = base ? (INGREDIENTS_ICONS[base] || "🥣") : "❓";
-  const ingsIconsHTML = ings.map(i => `<span style="background:#fff; padding:2px 6px; border-radius:6px; border:1px solid #ffd1dc;">${INGREDIENTS_ICONS[i] || i}</span>`).join(" ");
+  const ingsHTML = ings.map(i => `<span style="background:#fff; padding:2px 6px; border-radius:6px; border:1px solid #ffd1dc;">${i}</span>`).join(" ");
 
   workbench.innerHTML = `
     <div style="font-size:13px; font-weight:900; color:var(--pink-main); margin-bottom:4px; display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
-      <span>القاعدة: ${baseIcon}</span> | <span>المكونات:</span> ${ingsIconsHTML || 'لا توجد'}
+      <span>القاعدة: ${base || 'لم تُحدد'}</span> | <span>المكونات:</span> ${ingsHTML || 'لا توجد'}
     </div>
-    <div style="margin-top:8px; display:flex; gap:8px; justify-content:center;">
-      <button class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="putOnReadyCounter()">وضع على طاولة التحضير 🛎️</button>
-      <button class="btn-primary" style="padding:6px 14px; font-size:12px; background:#ff4757;" onclick="clearWorkbench()">مسح 🗑️</button>
+    <div style="margin-top:6px; display:flex; gap:8px; justify-content:center;">
+      <button class="btn-primary" style="padding:5px 12px; font-size:12px;" onclick="putOnReadyCounter()">وضع على الطاولة الجاهزة 🛎️</button>
+      <button class="btn-primary" style="padding:5px 12px; font-size:12px; background:#ff4757;" onclick="clearWorkbench()">مسح 🗑️</button>
     </div>
   `;
 }
@@ -392,7 +363,7 @@ function putOnReadyCounter() {
   }
 
   if (!matchedKey) {
-    showToast("المكونات أو القاعدة غير مطابقة لأي وصفة صحيحة! ❌");
+    showToast("المكونات غير مطابقة لأي وصفة! تأكد من المقادير ❌");
     clearWorkbench();
     return;
   }
@@ -420,7 +391,7 @@ function renderReadyDishes() {
   STATE.readyDishes.forEach((dish, index) => {
     const badge = document.createElement("div");
     badge.className = "ready-dish-badge";
-    badge.innerHTML = `<span style="font-size:16px;">${dish.recipe.cup}</span> <span style="font-weight:900;">${dish.recipe.name}</span> <span style="font-size:10px; background:var(--pink-subtle); padding:2px 6px; border-radius:6px; color:var(--pink-main);">قدّم للزبون 🛎️</span>`;
+    badge.innerHTML = `<span style="font-size:16px;">${dish.recipe.cup}</span> <span style="font-weight:900;">${dish.recipe.name}</span> <span style="font-size:10px; background:var(--pink-subtle); padding:2px 6px; border-radius:6px; color:var(--pink-main);">قدّم 🛎️</span>`;
     badge.addEventListener("click", () => deliverDish(index));
     container.appendChild(badge);
   });
@@ -445,7 +416,7 @@ function deliverDish(dishIndex) {
     updateStats();
     showToast("تم تسليم الطلب للزبون بنجاح! +120 نقطة ⭐");
   } else {
-    showToast("لا يوجد أي زبون يطلب هذا الصنف حالياً! انتظر زبوناً مناسباً أو احتفظ به.");
+    showToast("لا يوجد زبون يطلب هذا الصنف حالياً!");
   }
 
   renderReadyDishes();
@@ -469,10 +440,7 @@ function renderShopStation() {
   const shopItems = [
     { id: "spanishLatte", name: "فتح وصفة سبانش لاتيه المثلج", cost: 60, reqLevel: 2, icon: "🥤" },
     { id: "matchaIceCream", name: "فتح وصفة آيس كريم الماتشا", cost: 75, reqLevel: 2, icon: "🍨" },
-    { id: "pomegranateMojito", name: "فتح موهيتو الرمان المنعش", cost: 90, reqLevel: 2, icon: "🍹" },
-    { id: "saffronCake", name: "فتح كيكة الزعفران الملكية", cost: 120, reqLevel: 3, icon: "🧁" },
-    { id: "moltenCake", name: "فتح مولتن كيك الشوكولاتة", cost: 140, reqLevel: 3, icon: "🍫" },
-    { id: "macaronBox", name: "فتح علبة ماكارون فرنسي", cost: 160, reqLevel: 3, icon: "🍬" }
+    { id: "pomegranateMojito", name: "فتح موهيتو الرمان المنعش", cost: 90, reqLevel: 2, icon: "🍹" }
   ];
 
   shopItems.forEach(item => {
@@ -526,8 +494,7 @@ function renderOrdersRack() {
   activeOrders.forEach(ord => {
     const pct = (ord.patience / ord.maxPatience) * 100;
     const custAvatarSvg = ANIMALS_SVG[ord.customer.avatar] || ANIMALS_SVG["cat"];
-    const baseIcon = INGREDIENTS_ICONS[ord.recipe.base] || "🥣";
-    const reqIcons = ord.recipe.req.map(i => INGREDIENTS_ICONS[i] || i).join(" ");
+    const reqIcons = ord.recipe.req.join("، ");
 
     const card = document.createElement("div");
     card.className = "order-card";
@@ -541,8 +508,8 @@ function renderOrdersRack() {
       <div style="font-size:13px; color:var(--pink-main); font-weight:900; display:flex; align-items:center; gap:5px;">
         <span style="font-size:16px;">${ord.recipe.cup}</span> <span>${ord.recipe.name}</span>
       </div>
-      <div style="font-size:11px; color:#555; background:#fff7fa; padding:4px 6px; border-radius:6px; display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-        <span>قاعدة: ${baseIcon}</span> | <span>مكونات:</span> ${reqIcons}
+      <div style="font-size:11px; color:#555; background:#fff7fa; padding:4px 6px; border-radius:6px;">
+        المكونات: ${reqIcons}
       </div>
       <div class="patience-bar-bg"><div class="patience-bar-fill" style="width: ${pct}%;"></div></div>
       <div style="font-size:10px; color:var(--text-muted);">${ord.patience} ثانية متبقية</div>
