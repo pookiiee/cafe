@@ -5,74 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>كافيه بوكي للبنات | Pookie Cozy Cafe Rush</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-  <!-- ربط ملف التنسيقات الخارجي -->
   <link rel="stylesheet" href="cafe.css" />
+  <script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js" defer></script>
 </head>
 <body>
+
+  <div class="bg-decorations">
+    <div class="floating-icon" style="top: 10%; left: 15%; animation-delay: 0s;">🌸</div>
+    <div class="floating-icon" style="top: 70% আনন্দের; left: 80%; animation-delay: 3s;">✨</div>
+    <div class="floating-icon" style="top: 40% ; left: 85%; animation-delay: 6s;">🧋</div>
+    <div class="floating-icon" style="top: 80%; left: 20%; animation-delay: 9s;">☕</div>
+  </div>
 
   <div class="cafe-app">
     <header class="cafe-header">
       <div class="brand-wrapper">
         <span class="brand-icon">☕</span>
-        <h1 class="brand-title">كافيه بوكي للبنات</h1>
+        <div>
+          <h1 class="brand-title">كافيه بوكي للبنات</h1>
+          <span class="brand-sub">Pookie Cozy Cafe Rush</span>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="icon-btn" id="soundToggleBtn" title="كتم/تفعيل الصوت">🔔</button>
       </div>
     </header>
 
-    <div class="game-stats-bar" id="gameStatsBar" style="display:none;">
+    <div class="game-stats-bar" id="gameStatsBar">
       <div class="stat-item">النقاط: <span class="stat-badge" id="statScore">0</span></div>
       <div class="stat-item">الأرباح: <span class="stat-badge gold" id="statCoins">50 🪙</span></div>
-      <div class="stat-item">الوقت: <span class="stat-badge timer" id="statTimer">3:00</span></div>
+      <div class="stat-item">المستوى: <span class="stat-badge sky" id="statLevel">1 ⭐</span></div>
+      <div class="stat-item">الوقـت: <span class="stat-badge timer" id="statTimer">3:00</span></div>
     </div>
 
-    <!-- شاشة اللوبي -->
+    <!-- شاشة البداية (اللوبي) -->
     <main class="screen-panel active" id="lobbyScreen">
       <div class="lobby-card">
+        <div class="lobby-hero-art">
+          <div class="hero-art-item">🐱</div>
+          <div class="hero-art-item">☕</div>
+          <div class="hero-art-item">🐰</div>
+        </div>
         <h2 class="lobby-title">أهلاً بكِ في كافيه بوكي! 🌸</h2>
-        
+        <p class="lobby-desc">انضمي مع صديقاتكِ وحضّروا أشهى المشروبات والحلويات للزبائن الكيوت في أسرع وقت!</p>
+
         <div class="player-setup-box">
           <label class="setup-label">اسمك بالكافيه:</label>
           <input type="text" class="cute-input" id="playerNameInput" value="باريستا بوكي" />
 
-          <label class="setup-label" style="margin-top: 12px;">اختاري شخصيتك الكيوت:</label>
+          <label class="setup-label" style="margin-top: 14px;">اختاري شخصيتك الكيوت:</label>
           <div class="avatars-row"></div>
         </div>
 
-        <button class="btn-primary" id="startShiftBtn" style="width:100%;">🚀 ابدأ الشفت وافتح أبواب الكافيه!</button>
+        <div class="lobby-actions">
+          <button class="btn-primary" id="createRoomBtn">
+            <span>✨ إنشاء كافيه جديد ومشاركة الكود</span>
+          </button>
+
+          <div id="joinRoomInputWrap" style="display:flex; gap:8px;">
+            <button class="btn-secondary" id="joinRoomBtn" style="flex-shrink:0;">انضمام ☕</button>
+            <input type="text" class="cute-input" id="joinRoomCodeInput" placeholder="كود الكافيه (مثال: ABCD)" maxlength="6" style="text-transform:uppercase; text-align:center; letter-spacing:2px;" />
+          </div>
+
+          <button class="btn-solo" id="soloPlayBtn">🎮 لعب فردي (تدريب سريع وبدون نت)</button>
+        </div>
+
+        <div class="room-card" id="roomWaitingBox">
+          <div style="font-size: 14px; font-weight: 800; color: var(--text-dark);">رمز الكافيه الخاص بكِ:</div>
+          <div class="room-code-display" id="displayRoomCode">----</div>
+          <button class="copy-link-btn" id="copyRoomLinkBtn">📋 نسخ رابط الدعوة للصديقات</button>
+          <div style="font-size: 13px; color: var(--pink-main); font-weight: 800; animation: bounce 1.5s infinite;">
+            في انتظار انضمام الصديقات.. ابدئي الشفت متى شئتِ! 🌸
+          </div>
+          <button class="btn-primary" id="startShiftBtn" style="width: 100%; margin-top: 12px;">🚀 ابدأ الشفت الآن!</button>
+        </div>
       </div>
     </main>
 
-    <!-- شاشة اللعب -->
+    <!-- شاشة اللعب الرئيسية -->
     <main class="screen-panel" id="gameScreen">
       <div class="orders-ticket-rack" id="ordersRack"></div>
 
       <div class="stations-nav">
         <button class="station-tab-btn active" data-station="drinks">☕ محطة المشروبات</button>
         <button class="station-tab-btn" data-station="bakery">🍰 محطة الحلويات</button>
-        <button class="station-tab-btn" data-station="serving">🛎️ التسليم</button>
+        <button class="station-tab-btn" data-station="serving">🛎️ طاولة التسليم</button>
+        <button class="station-tab-btn" data-station="shop">🛍️ متجر الكافيه</button>
       </div>
 
       <div class="station-content-panel">
-        <div class="station-step-hint" id="stationHint">اختر المكونات لتحضير الطلب!</div>
-        <div class="crafting-workbench" id="craftingWorkbench">
-          <div id="currentItemVisual" style="font-size:14px; color:#806875;">طاولة التحضير فارغة..</div>
+        <div class="station-header">
+          <span class="station-title" id="stationTitleName">محطة المشروبات الساخنة والباردة</span>
+          <span class="station-step-hint" id="stationHint">اختر المكونات المناسبة..</span>
         </div>
+
+        <div class="crafting-workbench" id="craftingWorkbench">
+          <div class="current-item-visual" id="currentItemVisual">
+            <span class="item-cup-preview" style="opacity: 0.4;">🥛</span>
+            <span style="font-size: 12.5px; color: var(--text-muted);">طاولة التحضير فارغة.. أضف المكونات!</span>
+          </div>
+        </div>
+
+        <div class="shared-counter-box" id="sharedCounterBox">
+          <div class="shared-counter-title">✨ طاولة التحضير المشتركة مع صديقاتك:</div>
+          <div class="shared-items-slots" id="sharedItemsContainer">
+            <span class="shared-empty-hint">لا توجد أطباق جاهزة على الطاولة حالياً.. اطبخوا وشاركوا معاً! 🍰</span>
+          </div>
+        </div>
+
         <div class="ingredients-grid" id="ingredientsGrid"></div>
+      </div>
+
+      <div class="quick-shouts-bar">
+        <button class="shout-btn" data-shout="أحتاج حليب بسرعة! 🥛">🥛 أطلب حليب</button>
+        <button class="shout-btn" data-shout="جهزت طلب زبون VIP! 👑">👑 طلبية VIP</button>
+        <button class="shout-btn" data-shout="يا بنات الكافيه زحمة! 🏃‍♀️">🏃‍♀️ الكافيه زحمة</button>
+        <button class="shout-btn" data-shout="شكراً لطباختنا الماهرة! 💕">💕 شكراً لكم</button>
       </div>
     </main>
 
     <!-- شاشة النتائج -->
     <main class="screen-panel" id="resultsScreen">
       <div class="results-card">
-        <h2>انتهى الشفت! 🌟</h2>
-        <p>مجموع النقاط: <span id="resultScore">0</span></p>
-        <button class="btn-primary" id="playAgainBtn" style="width:100%; margin-top:15px;">شفت جديد 🔄</button>
+        <div class="stars-celebration">
+          <span class="star-anim" style="animation-delay: 0.1s;">🌟</span>
+          <span class="star-anim" style="animation-delay: 0.2s;">💖</span>
+          <span class="star-anim" style="animation-delay: 0.3s;">⭐</span>
+        </div>
+        <h2 style="font-size: 24px; color: var(--pink-main); margin-bottom: 6px;">انتهى الشفت بنجاح!</h2>
+        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">أداء رائع جداً أنتِ وصديقاتكِ في كافيه بوكي!</p>
+        
+        <div class="results-stats-grid">
+          <div class="results-box">
+            <div class="results-box-val" id="resultScore">0</div>
+            <div class="results-box-lbl">مجموع النقاط</div>
+          </div>
+          <div class="results-box">
+            <div class="results-box-val" id="resultCoins">0 🪙</div>
+            <div class="results-box-lbl">الأرباح المكتسبة</div>
+          </div>
+          <div class="results-box">
+            <div class="results-box-val" id="resultServed">0</div>
+            <div class="results-box-lbl">طلبات مسلمة</div>
+          </div>
+          <div class="results-box">
+            <div class="results-box-val" id="resultMissed">0</div>
+            <div class="results-box-lbl">طلبات فائتة</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="playAgainBtn" style="width: 100%;">🔄 ابدأ شفت جديد</button>
       </div>
     </main>
   </div>
 
-  <div class="toast-shout" id="toastShout">✨ أهلاً بكِ!</div>
-  
-  <!-- ربط ملف البرمجة الخارجي -->
+  <div class="toast-shout" id="toastShout">
+    <span>✨</span> <span>أهلاً بكِ في كافيه بوكي!</span>
+  </div>
+
   <script src="cafe.js"></script>
 </body>
 </html>
