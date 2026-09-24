@@ -96,19 +96,21 @@
       <div class="station-content-panel">
         <div class="station-header">
           <span class="station-title" id="stationTitleName">محطة المشروبات الساخنة والباردة</span>
-          <span class="station-step-hint" id="stationHint">اختر المكونات المناسبة..</span>
+          <span class="station-step-hint" id="stationHint">اختر الكوب أو القاعدة أولاً..</span>
         </div>
 
         <div class="crafting-workbench" id="craftingWorkbench">
           <div class="current-item-visual" id="currentItemVisual">
             <span class="item-cup-preview" style="opacity: 0.4;">🥛</span>
-            <span style="font-size: 12.5px; color: var(--text-muted);">طاولة التحضير فارغة.. أضف المكونات!</span>
+            <span style="font-size: 12.5px; color: var(--text-muted);">طاولة التحضير فارغة.. اختر الكوب/القاعدة أولاً!</span>
           </div>
         </div>
 
-        <div class="shared-counter-box" id="sharedCounterBox" style="display:none;">
-          <div class="shared-counter-title">✨ طاولة التحضير المشتركة مع صديقاتك:</div>
-          <div class="shared-items-slots" id="sharedItemsContainer"></div>
+        <div class="shared-counter-box" id="sharedCounterBox">
+          <div class="shared-counter-title">✨ الطاولة الجاهزة (الطلبات المحضرة بانتظار التقديم):</div>
+          <div class="shared-items-slots" id="sharedItemsContainer">
+            <span class="shared-empty-hint" style="font-size:11.5px; color:var(--text-muted);">لا توجد طلبات جاهزة على الطاولة حالياً..</span>
+          </div>
         </div>
 
         <div class="ingredients-grid" id="ingredientsGrid"></div>
